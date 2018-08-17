@@ -1,0 +1,168 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace IsignatureMaintain.views
+{
+    public partial class FileReSign : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        /*数据库连接字符创*/
+        string SQLCON_Isignature = ConfigurationManager.ConnectionStrings["SQLCON_Isignature"].ToString();
+        string SQLCON_DWH = ConfigurationManager.ConnectionStrings["SQLCON_DWH"].ToString();
+        //string SQLCON_COPT6 = ConfigurationManager.ConnectionStrings["SQLCON_COPT6"].ToString();
+
+        /*SQL数据执行*/
+        public void noQuery(string sql, string SQLCON)
+        {
+            SqlConnection conn = new SqlConnection(SQLCON);
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
+
+        /*SQL数据查询，返回datatable*/
+        public DataTable GetData(string selctsql)
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(SQLCON_DWH);
+            conn.Open();
+            StringBuilder sql_dwh = new StringBuilder();
+            sql_dwh.AppendFormat(selctsql);
+            SqlDataAdapter ad = new SqlDataAdapter(sql_dwh.ToString(), conn);
+            ad.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+
+
+        //连接ftp服务器
+        public static bool IsFileExist(string pFtpUrl, string pFtpUserID, string pFtpPW, string pFileName)
+        {
+            StringBuilder result = new StringBuilder();
+
+            //连接到FTP服务器
+            FtpWebRequest reqFTP = (FtpWebRequest)FtpWebRequest.Create(pFtpUrl);
+            reqFTP.UseBinary = true;
+            reqFTP.Credentials = new NetworkCredential(pFtpUserID, pFtpPW);
+            reqFTP.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+            WebResponse response = reqFTP.GetResponse();
+
+            //读取ftp目录下所有文件的文件信息
+            StreamReader reader = new StreamReader(response.GetResponseStream());
+            string line = reader.ReadLine();
+            while (line != null)
+            {
+                result.Append(line);
+                result.Append("\n");
+                line = reader.ReadLine();
+            }
+            reader.Close();
+            response.Close();
+
+            //查看结果字符串是否包含文件名，如果包含，文件存在
+            return result.ToString().Contains(pFileName);
+        }
+
+
+
+        //重签按钮
+        protected void Resign_Button_Click(object sender, EventArgs e)
+        {
+            string FileName = this.FileName_TextBox.Text.ToString().Trim().ToLower();        //获取文本框文件名
+            bool isExist = IsFileExist("ftp://10.151.126.1/success/", "sneceddm", "sneceddm", FileName);
+
+            string docName = "";   //文件名称，不带前缀
+            //加入文件存在，执行重签操作，否则不执行。
+            if (isExist == true)
+            {
+                try
+                {
+                    int Head_Pos = FileName.IndexOf("$");      //获取第一个$的坐标
+                    int End_Pos = FileName.IndexOf(".") - 2;     //获取"."的坐标
+                    int length = End_Pos - Head_Pos;           //获取截取字符串的长度
+                    docName = FileName.Substring(Head_Pos + 1);     //图号+文件格式
+                }
+                catch (Exception ex)
+                {
+                    //this.Response.Write("<script>alert('文件名格式有误');</script>");
+                    return;
+                }
+                //重签之前先将spf。
+                string sql1 = "update [DWH].[dbo].[SPF_QZ_File_Info] set [result]='' WHERE [filename] = '" + docName + "'";
+                noQuery(sql1, SQLCON_DWH);
+
+                //重签明细执行，success路径下有签名文件，将DOC_SYNC_STATUS设置为0，会将数据自动更新进cpms/SPF，并将文件上传至FTP服务器。
+                string resignsql = "update [dbo].[SIGN_DOCNUMET] set DOC_STATUS=2,ErrorMsg='手动处理',DOC_SYNC_STATUS='0',WRITELOG='N' WHERE DOC_DOCUMENTID = '" + FileName + "'";
+                noQuery(resignsql, SQLCON_Isignature);
+                System.Threading.Thread.Sleep(10000);
+            }
+            else
+            {
+                this.Response.Write("<script>alert('文件在ftp://10.151.126.1/success路劲下不存在！');</script>");
+            }
+            //展示该文件在DWH总结库中信息
+            DataBound_CPMS_SPF();
+            
+        }
+
+        //依据文件名获取该文件在DWH中间库中信息
+        public void DataBound_CPMS_SPF()
+        {
+            //定义文件名
+            string FileName = "";
+            //获取文件名
+            try
+            {
+                string FullName = this.FileName_TextBox.Text.Trim().ToString().Trim();
+                int Head_Pos = FullName.IndexOf("$");      //获取第一个$的坐标
+                int End_Pos = FullName.IndexOf(".") - 2;     //获取"."的坐标
+                int length = End_Pos - Head_Pos;           //获取截取字符串的长度
+                FileName = FullName.Substring(Head_Pos + 1, length).ToString();  //图号
+            }
+            catch
+            {
+                this.Response.Write("<script>alert('文件名格式有误');</script>");
+                return;
+            }
+
+            //根据文件名获取该文件在SPF_QZ_File_Info中信息
+            string Selectsql_SPF = "SELECT filename,fileroute,PrintstyleName,state,PageCount,ZA1count,fileroute,result FROM [DWH].[dbo].[SPF_QZ_File_Info] WHERE filename like '%" + FileName + "%'";
+            this.GridView_SPFInfo.DataSource = GetData(Selectsql_SPF);
+            this.GridView_SPFInfo.DataBind();
+
+            //根据文件名获取该文件在CPMS_sync_drawinginfo中信息
+            string Selectsql_CPMS_drawinginfo = "SELECT common_id,picnumber,picname,designer,uploadtime,annex,picturename,special,specnumber,piccount,a1,projectname,pltannex,printstylename,printfilename,miji,UnitName FROM [DWH].[dbo].[CPMS_sync_drawinginfo] WHERE picnumber like '%" + FileName + "%'";
+            this.GridView_CPMS_drawinginfo.DataSource = GetData(Selectsql_CPMS_drawinginfo);
+            this.GridView_CPMS_drawinginfo.DataBind();
+
+            //根据文件名获取该文件在CPMS_sync_fileinfo中信息
+            string Selectsql_CPMS_fileinfo = "SELECT [common_id],[filesrc],[fileuid],[filename],[ftpaddress],[fileext] FROM [DWH].[dbo].[CPMS_sync_fileinfo] WHERE ftpaddress like '%" + FileName + "%' order by fileuid desc";
+            this.GridView_CPMS_fileinfo.DataSource = GetData(Selectsql_CPMS_fileinfo);
+            this.GridView_CPMS_fileinfo.DataBind();
+        }
+
+        //搜索按钮
+        protected void Seach_Button_Click(object sender, EventArgs e)
+        {
+            DataBound_CPMS_SPF();
+        }
+
+
+    }
+}

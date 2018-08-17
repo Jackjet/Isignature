@@ -1,0 +1,74 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="KeyMaintain.aspx.cs" Inherits="IsignatureMaintain.views.KeyMaintain" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-1">
+                <h5>密钥盘序号：</h5>
+            </div>
+            <div class="col-lg-3">
+                <asp:TextBox ID="TextBox_keysn" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            <div class="col-lg-1">
+                <h5>当前状态：</h5>
+            </div>
+            <div class="col-lg-3">
+                <asp:DropDownList ID="DropDownList_keyStatus" runat="server"  CssClass="selectpicker show-tick">
+                    <asp:ListItem>请选择</asp:ListItem>
+                    <asp:ListItem>启用</asp:ListItem>
+                    <asp:ListItem>注销</asp:ListItem>
+                    <asp:ListItem>禁用</asp:ListItem>
+                </asp:DropDownList>
+            </div>
+            <div class="col-lg-1">
+                <h5>所在部门：</h5>
+            </div>
+            <div class="col-lg-3">
+                <asp:DropDownList ID="DropDownList_orgName" runat="server"  CssClass="selectpicker show-tick"></asp:DropDownList>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col-lg-1">
+                <h5>用户编码：</h5>
+            </div>
+            <div class="col-lg-3">
+                <asp:TextBox ID="TextBox_userCode" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            <div class="col-lg-1">
+                <h5>用户姓名：</h5>
+            </div>
+            <div class="col-lg-3">
+                <asp:TextBox ID="TextBox_userName" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            <div class="col-lg-1">
+                
+            </div>
+            <div class="col-lg-3">
+                <asp:Button ID="Seach" runat="server" Text="搜索"  CssClass="btn btn-primary btn-sm" OnClick="Seach_Click" />
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="container-fluid">
+        <asp:GridView ID="GridView_key" runat="server" CssClass="EU_DataTable" AllowPaging="True" PageSize="25" AutoGenerateColumns="False" OnPageIndexChanging="GridView_key_PageIndexChanging" DataKeyNames="tid" OnRowDeleting="GridView_key_RowDeleting" >
+            <Columns>
+                <asp:BoundField DataField="tid" Visible="False" />
+                <asp:BoundField DataField="keysn" HeaderText="密钥盘序号" />
+                <asp:BoundField DataField="userCode" HeaderText="用户编码" />
+                <asp:BoundField DataField="userName" HeaderText="用户姓名" />
+                <asp:BoundField DataField="keyStatus" HeaderText="当前状态" />
+                <asp:BoundField DataField="orgName" HeaderText="所在部门" />
+                <asp:BoundField DataField="applyDate" HeaderText="启用日期" />
+                <asp:BoundField DataField="overDate" HeaderText="过期日期" />
+                <asp:CommandField HeaderText="删除" ShowDeleteButton="True" />
+            </Columns>
+        </asp:GridView>
+    </div>
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder2" runat="server">
+</asp:Content>

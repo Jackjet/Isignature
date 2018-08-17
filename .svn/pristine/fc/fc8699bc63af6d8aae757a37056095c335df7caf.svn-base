@@ -1,0 +1,76 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="SuccssOrFail.aspx.cs" Inherits="IsignatureMaintain.views.SuccssOrFail" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-1">
+                <h5>项目号：</h5>
+            </div>
+            <div class="col-lg-4">
+                <asp:TextBox ID="TextBox_PrjNum" runat="server" CssClass="form-control"></asp:TextBox>
+
+            </div>
+            <div class="col-lg-1">
+                <h5>文件名：</h5>
+            </div>
+            <div class="col-lg-4">
+                <asp:TextBox ID="TextBox_DocName" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col-lg-1">
+                <h5>设计人：</h5>
+            </div>
+            <div class="col-lg-4">
+                <asp:TextBox ID="TextBox_Designer" runat="server" CssClass="form-control"></asp:TextBox>
+            </div>
+            <div class="col-lg-1">
+                <h5>最终结果：</h5>
+            </div>
+            <div class="col-lg-4">
+                <asp:DropDownList ID="DropDownList_DOC_STATUS" runat="server" CssClass="selectpicker show-tick">
+                    <asp:ListItem></asp:ListItem>
+                    <asp:ListItem>成功</asp:ListItem>
+                    <asp:ListItem>失败</asp:ListItem>
+                </asp:DropDownList>
+            </div>
+            <div class="col-lg-1">
+
+            </div>
+            <div class="col-lg-2">
+                <asp:Button ID="Button_Seach" runat="server" Text="搜索" CssClass="btn btn-primary btn-sm" OnClick="Button_Seach_Click"/>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="container-fluid">
+        <asp:GridView ID="GridView1" runat="server" CssClass="EU_DataTable" AllowPaging="True" PageSize="20" OnPageIndexChanging="GridView1_PageIndexChanging" AutoGenerateColumns="False" RowStyle-Height="35" OnRowDataBound="GridView1_RowDataBound">
+            <Columns>
+                <asp:BoundField DataField="uploadtime" HeaderText="uploadtime" Visible="False" />
+                <asp:BoundField DataField="DOC_DOCUMENTID" HeaderText="DOC_DOCUMENTID" Visible="False" />
+                <asp:BoundField DataField="printfilename" HeaderText="printfilename" Visible="False" />
+                <asp:BoundField DataField="DOC_UNIQUE" HeaderText="文件序号" />
+                <asp:BoundField DataField="picnumber" HeaderText="图号" />
+                <asp:HyperLinkField DataNavigateUrlFields="DOC_DOCUMENTID" DataNavigateUrlFormatString="~/Views/MidDBInfo.aspx?DOC_NAME={0}" DataTextField="DOC_DOCUMENTID" HeaderText="文件名" />
+                <asp:BoundField DataField="picname" HeaderText="图名" />
+                <asp:BoundField DataField="projectnumber" HeaderText="项目号" />
+                <asp:BoundField DataField="projectname" HeaderText="项目名称" />
+                <asp:BoundField DataField="special" HeaderText="专业" />
+                <asp:BoundField DataField="CREATE_TIME" HeaderText="上传日期" />
+                <asp:BoundField DataField="ErrorMsg" HeaderText="签名信息" />
+                <asp:BoundField DataField="DOC_STATUS" HeaderText="签名状态" />
+                <asp:BoundField DataField="designer" HeaderText="设计人" />
+            </Columns>
+
+<RowStyle Height="35px"></RowStyle>
+        </asp:GridView>
+    </div>
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder2" runat="server">
+</asp:Content>

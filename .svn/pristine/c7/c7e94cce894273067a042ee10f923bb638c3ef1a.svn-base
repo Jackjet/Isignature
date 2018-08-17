@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  有关如何配置 ASP.NET 应用程序的详细信息，请访问
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+
+<configuration>
+  <system.web>
+    <compilation debug="true" targetFramework="4.5" />
+    <httpRuntime targetFramework="4.5" />
+  </system.web>
+  <connectionStrings>
+    <add name="SQLCON_Isignature" connectionString="Data Source=10.151.126.3;User ID=sa;Password=isignature8.0;Initial Catalog=MyDataBase;Min Pool Size=20;Max Pool Size=75"
+      providerName="System.Data.SqlClient" />
+    <add name="SQLCON_DWH" connectionString="Data Source=10.151.131.53;User ID=sa;Password=PowerSnec%!%20100901;Initial Catalog=DWH;Min Pool Size=20;Max Pool Size=75"
+      providerName="System.Data.SqlClient" />
+    <add name="SQLCON_Huizhi" connectionString="Data Source=10.151.126.41;User ID=sa;Password=isignature8.0;Initial Catalog=nbsh;Min Pool Size=20;Max Pool Size=75"
+      providerName="System.Data.SqlClient" />
+    <add name="SQLCON_COPT6" connectionString="Data Source=10.151.131.61;User ID=sa;Password=snec2014SNEC;Initial Catalog=gtp-default;Min Pool Size=20;Max Pool Size=150"
+      providerName="System.Data.SqlClient" />
+    <add name="nbshConnectionString" connectionString="Data Source=10.151.126.41;Initial Catalog=nbsh;Persist Security Info=True;User ID=sa;Password=isignature8.0"
+      providerName="System.Data.SqlClient" />
+  </connectionStrings>
+</configuration>

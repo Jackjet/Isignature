@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+您 Web 项目的发布/打包进程将使用此文件。您可以通过编辑此 MSBuild 文件
+来自定义该进程的行为。若要了解与此相关的详细信息，请访问 http://go.microsoft.com/fwlink/?LinkID=208121。
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>C:\Users\wulm\Desktop\aaa\签章管理系统</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/IsignatureMaintain.dll">
+      <publishTime>11/16/2016 15:51:36</publishTime>
+    </File>
+    <File Include="CSS/Gridview.css">
+      <publishTime>11/10/2016 10:44:50</publishTime>
+    </File>
+    <File Include="CSS/head.css">
+      <publishTime>11/08/2016 11:37:07</publishTime>
+    </File>
+    <File Include="CSS/loading.css">
+      <publishTime>11/16/2016 11:38:24</publishTime>
+    </File>
+    <File Include="img/close.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/close1.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/header-image-one.jpg">
+      <publishTime>11/03/2016 16:27:39</publishTime>
+    </File>
+    <File Include="img/huiyuan.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/huiyuan1.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/list.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/list1.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/loading.gif">
+      <publishTime>11/16/2016 14:07:34</publishTime>
+    </File>
+    <File Include="img/search.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="img/search1.png">
+      <publishTime>11/08/2016 11:37:17</publishTime>
+    </File>
+    <File Include="index.html">
+      <publishTime>11/03/2016 16:20:06</publishTime>
+    </File>
+    <File Include="js/jquery-1.12.4.min.js">
+      <publishTime>11/16/2016 09:43:36</publishTime>
+    </File>
+    <File Include="js/jquery-1.8.3.js">
+      <publishTime>11/14/2016 10:54:29</publishTime>
+    </File>
+    <File Include="js/jquery-1.8.3.min.js">
+      <publishTime>11/14/2016 10:54:29</publishTime>
+    </File>
+    <File Include="js/loading.js">
+      <publishTime>11/16/2016 13:45:58</publishTime>
+    </File>
+    <File Include="menubar.html">
+      <publishTime>11/16/2016 15:21:30</publishTime>
+    </File>
+    <File Include="PrecompiledApp.config">
+      <publishTime>11/16/2016 15:51:36</publishTime>
+    </File>
+    <File Include="Views/ContactInfo.html">
+      <publishTime>11/09/2016 13:29:41</publishTime>
+    </File>
+    <File Include="Views/FileReSign.aspx">
+      <publishTime>11/16/2016 15:51:23</publishTime>
+    </File>
+    <File Include="Views/FileSignature.aspx">
+      <publishTime>11/16/2016 15:31:03</publishTime>
+    </File>
+    <File Include="Views/HistoryVersion.aspx">
+      <publishTime>11/16/2016 15:31:18</publishTime>
+    </File>
+    <File Include="Views/ResultSearch.aspx">
+      <publishTime>11/16/2016 15:39:23</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>11/09/2016 09:09:05</publishTime>
+    </File>
+    <File Include="Web.sitemap">
+      <publishTime>11/09/2016 11:49:14</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

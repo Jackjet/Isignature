@@ -1,0 +1,96 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="PersonMaintain.aspx.cs" Inherits="IsignatureMaintain.views.PersonMaintain" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <asp:Label ID="UsrSeach_Lab" runat="server" Text="用户查询▼" Font-Size="Large" Font-Bold="true" Font-Names="微软雅黑"></asp:Label>
+                </a>
+            </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-1">
+                        <h5>姓名：</h5>
+                    </div>
+                    <div class="col-lg-5">
+                        <input id="name_text" type="text" runat="server" class="form-control" />
+                    </div>
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-5">
+                        <asp:Button ID="Button_Search" runat="server" Text="搜索" CssClass="btn btn-primary btn-sm" OnClick="Button_Search_Click" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingThree">
+                <h4 class="panel-title">
+                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <asp:Label ID="UsrAdd_Lab" runat="server" Text="用户添加▼" Font-Size="Large" Font-Bold="true" Font-Names="微软雅黑"></asp:Label>
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-1">
+                            <h5>账户：</h5>
+                        </div>
+                        <div class="col-lg-5">
+                            <input id="AccountAdd_Text" type="text" runat="server" placeholder="zhangsan" class="form-control" />
+                        </div>
+                        <div class="col-lg-1">
+                            <h5>姓名：</h5>
+                        </div>
+                        <div class="col-lg-5">
+                            <input id="NameAdd_Text" type="text" runat="server" placeholder="张三" class="form-control" />
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-lg-1">
+                            <h5>部门：</h5>
+                        </div>
+                        <div class="col-lg-5">
+                            <asp:DropDownList ID="DropDownList_Dep" runat="server" CssClass="selectpicker show-tick">
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-5">
+                            <asp:Button ID="Button_Add" runat="server" Text="添加" CssClass="btn btn-primary btn-sm" OnClick="Button_Add_Click" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <asp:GridView ID="GridView_Person" runat="server" CssClass="EU_DataTable" AllowPaging="True" PageSize="20" OnPageIndexChanging="GridView_Person_PageIndexChanging" AutoGenerateColumns="False" DataKeyNames="mainid" OnRowCancelingEdit="GridView_Person_RowCancelingEdit" OnRowDeleting="GridView_Person_RowDeleting" OnRowEditing="GridView_Person_RowEditing" OnRowUpdating="GridView_Person_RowUpdating">
+            <Columns>
+                <asp:BoundField DataField="mainid" HeaderText="序号" ReadOnly="True" />
+                <asp:BoundField DataField="account" HeaderText="账户" />
+                <asp:BoundField DataField="username" HeaderText="姓名" />
+                <asp:BoundField DataField="orgname" HeaderText="部门" ReadOnly="True" />
+                <asp:BoundField DataField="departmentid" HeaderText="部门序号" ReadOnly="True" />
+                <asp:BoundField DataField="userstate" HeaderText="工作情况" ReadOnly="True" />
+                <asp:BoundField DataField="systemtime" HeaderText="更新时间" ReadOnly="True" />
+                <asp:BoundField DataField="erpuid" HeaderText="员工编号" ReadOnly="True" />
+                <asp:CommandField HeaderText="编辑" ShowEditButton="True" />
+                <asp:CommandField HeaderText="删除" ShowDeleteButton="True" />
+            </Columns>
+        </asp:GridView>
+    </div>
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder2" runat="server">
+</asp:Content>
+
+
+

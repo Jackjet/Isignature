@@ -1,0 +1,190 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="IsignatureMaintain.Site1" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>数字化图档运维管理系统</title>
+
+    <link href="<%=ResolveClientUrl("~/css/loading.css") %>" rel="stylesheet" />
+    <%--引用bootstrap框架CSS--%>
+    <link href="<%=ResolveClientUrl("~/css/bootstrap.min.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/bootstrap-select.min.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/Gridview.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/font-awesome.min.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/bootstrap-datetimepicker.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/bootstrap-datetimepicker.min.css") %>" rel="stylesheet" />
+    <%-- <link href="css/lovely.css" rel="stylesheet" />--%>
+
+
+    <%--LayUI--%>
+    <link href="<%=ResolveClientUrl("~/LayUI/css/layui.css") %>" rel="stylesheet" />
+    <script src='<%=ResolveUrl("~/LayUI/layui.js") %>'></script>
+
+
+    <%--HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries--%>
+    <script src='<%=ResolveUrl("~/js/respond.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/html5shiv.min.js") %>'></script>
+
+    <%--引用bootstrap框架js--%>
+    <script src='<%=ResolveUrl("~/js/jquery-3.1.1.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap-select.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/transition.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.min.js") %>'></script>
+
+    <script src='<%=ResolveUrl("~/js/loading.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/chart.js") %>'></script>
+
+    <%--引用js函数--%>
+    <script>
+        $(function () {
+            $("[data-toggle='tooltip']").tooltip();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".navbar-nav li").click(function () {
+                //$(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                //$(this).addClass("active").siblings().removeClass("active");
+            });
+        });
+    </script>
+
+    <script>
+        //JavaScript代码区域
+        layui.use('element', function () {
+            var element = layui.element;
+
+        });
+    </script>
+
+    <script>
+
+        layui.use('form', function () {
+            var form = layui.form;
+
+            //自定义验证规则
+            form.verify({
+                title: function (value) {
+                    if (value.length < 5) {
+                        return '标题也太短了吧';
+                    }
+                }
+              , pass: [/(.+){6,12}$/, '密码必须6到12位']
+            });
+
+
+            //事件监听
+            form.on('select', function (data) {
+                console.log('select: ', this, data);
+            });
+
+            form.on('select(quiz)', function (data) {
+                console.log('select.quiz：', this, data);
+            });
+
+            form.on('select(interest)', function (data) {
+                console.log('select.interest: ', this, data);
+            });
+
+
+
+            form.on('checkbox', function (data) {
+                console.log(this.checked, data.elem.checked);
+            });
+
+            form.on('switch', function (data) {
+                console.log(data);
+            });
+
+            form.on('radio', function (data) {
+                console.log(data);
+            });
+
+            //监听提交
+            form.on('submit(*)', function (data) {
+                console.log(data)
+                return false;
+            });
+
+        });
+    </script>
+
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <div class="layui-bg-cyan">
+        <div class="layui-header">
+            <%--<img src="../img/SegLog.jpg" />--%>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"><a href="ResultSearch.aspx">主页</a></li>
+                <li class="layui-nav-item"><a href="SuccssOrFail.aspx">签章结果</a></li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;">签名查询</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="FileSignature.aspx">文件签名详情</a></dd>
+                        <dd><a href="KeyMaintain.aspx">密钥查询</a></dd>
+                        <dd><a href="SignMaintain.aspx">签章查询</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="FileReSign.aspx">异常处理</a></li>
+                <li class="layui-nav-item"><a href="MidDBInfo.aspx">中间库信息</a></li>
+                <li class="layui-nav-item"><a href="PersonMaintain.aspx">人员维护</a></li>
+                <li class="layui-nav-item"><a href="DataDictMaintain.aspx">数据字典</a></li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;">报表统计</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="RsFileRpt.aspx">签名文件统计</a></dd>
+                        <dd><a href="ReasonRpt.aspx">重签原因统计</a></dd>
+                    </dl>
+                </li>
+            </ul>
+
+            <ul class="layui-nav layui-layout-right">                
+                <li class="layui-nav-item">
+                    <a href="javascript:;">更多</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="http://cop.snec.com" target="_blank">协同办公系统</a></dd>
+                        <dd><a href="http://eddm.snec.com" target="_blank">慧智图档系统</a></dd>
+                        <dd><a href="http://cpms.snec.com/" target="_blank">综合项目管理系统</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="Login.aspx">注销</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <br />
+    <div class="layui-fluid">
+        <form id="form1" runat="server">
+            <div class="layui-row">
+                <div class="layui-col-md12">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+                <br />
+
+                <div>
+                    <div class="layui-col-md12">
+                        <asp:ContentPlaceHolder ID="ContentPlaceHolder2" runat="server">
+                        </asp:ContentPlaceHolder>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </form>
+
+    </div>
+</body>
+</html>

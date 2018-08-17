@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+  有关如何配置 ASP.NET 应用程序的详细信息，请访问
+  http://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+<configuration>
+  <appSettings>
+    <add key="ChartImageHandler" value="storage=file;timeout=20;dir=c:\TempImageFiles\;" />
+  </appSettings>
+  <system.webServer>
+    <validation validateIntegratedModeConfiguration="false" />
+    <handlers>
+      <remove name="ChartImageHandler" />
+      <add name="ChartImageHandler" preCondition="integratedMode" verb="GET,HEAD,POST"
+        path="ChartImg.axd" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    </handlers>
+  </system.webServer>
+  <system.web>
+    <httpHandlers>
+      <add path="ChartImg.axd" verb="GET,HEAD,POST" type="System.Web.UI.DataVisualization.Charting.ChartHttpHandler, System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
+        validate="false" />
+    </httpHandlers>
+    <pages>
+      <controls>
+        <add tagPrefix="asp" namespace="System.Web.UI.DataVisualization.Charting"
+          assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+      </controls>
+    </pages>
+    <compilation debug="true" targetFramework="4.5">
+      <assemblies>
+        <add assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+      </assemblies>
+    </compilation>
+    <httpRuntime targetFramework="4.5"/>
+  </system.web>
+  <connectionStrings>
+    <add name="SQLCON_Isignature" connectionString="Data Source=10.151.126.3;User ID=sa;Password=isignature8.0;Initial Catalog=MyDataBase;Min Pool Size=20;Max Pool Size=75" providerName="System.Data.SqlClient"/>
+    <add name="SQLCON_DWH" connectionString="Data Source=10.151.131.53;User ID=sa;Password=20W16D1s2%;Initial Catalog=DWH;Min Pool Size=20;Max Pool Size=75" providerName="System.Data.SqlClient"/>
+    <add name="SQLCON_Huizhi" connectionString="Data Source=10.151.126.41;User ID=sa;Password=isignature8.0;Initial Catalog=nbsh;Min Pool Size=20;Max Pool Size=75" providerName="System.Data.SqlClient"/>
+    <add name="SQLCON_COPT6" connectionString="Data Source=10.151.131.61;User ID=sa;Password=Cd5O4b6P1$;Initial Catalog=gtp-default;Min Pool Size=20;Max Pool Size=150" providerName="System.Data.SqlClient"/>
+    <add name="MYSQLCON_IsigSys" connectionString="Server=10.151.126.1;Database=isignatureserver;Uid=kinggrid;Pwd=kinggrid;Port=3382" providerName="MySql.Data.MySqlClient"/>
+  </connectionStrings>
+</configuration>

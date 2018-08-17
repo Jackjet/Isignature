@@ -1,0 +1,126 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" MaintainScrollPositionOnPostback="true" AutoEventWireup="true" CodeBehind="MidDBInfo.aspx.cs" Inherits="IsignatureMaintain.views.MidDBInfo" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-1">
+                <h5>文件名：</h5>
+            </div>
+            <div class="col-lg-5">
+                <asp:TextBox ID="FileName_TextBox" runat="server" CssClass="form-control" placeholder="@4331935$0531-D-1200-EQ-DW060-0203A.dwg"></asp:TextBox>
+            </div>
+            <div class="col-lg-3"></div>
+            <div class="col-lg-3">
+                <asp:Button ID="Seach" runat="server" Text="搜索" CssClass="btn btn-primary btn-sm" OnClick="Seach_Click" />
+            </div>
+        </div>
+    </div>
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder2" runat="server">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h4><span class="label label-success">SPF中间库</span></h4>
+        </div>
+        <div class="panel-body">
+            <h5>SPF签章文件信息（表SPF_QZ_File_Info）</h5>
+        </div>
+        <div class="panel-body">
+            <asp:GridView ID="GridView_SPF_QZ_File_Info" runat="server" CssClass="EU_DataTable" AutoGenerateColumns="False" OnRowEditing="GridView_SPF_QZ_File_Info_RowEditing" OnRowUpdating="GridView_SPF_QZ_File_Info_RowUpdating" DataKeyNames="common_id" OnRowCancelingEdit="GridView_SPF_QZ_File_Info_RowCancelingEdit">
+                <Columns>
+                    <asp:BoundField DataField="filename" HeaderText="filename" ReadOnly="True" >
+                    <HeaderStyle Width="15%" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="PrintstyleName" HeaderText="PrintstyleName" ReadOnly="True" >
+                    <HeaderStyle Width="5%" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="state" HeaderText="state" ControlStyle-Width="50%">
+<ControlStyle Width="50%"></ControlStyle>
+                    <HeaderStyle Width="5%" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="PageCount" HeaderText="PageCount" ControlStyle-Width="50%">
+<ControlStyle Width="50%"></ControlStyle>
+                    <HeaderStyle Width="5%" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="ZA1count" HeaderText="ZA1count" ControlStyle-Width="50%">
+<ControlStyle Width="50%"></ControlStyle>
+                    <HeaderStyle Width="5%" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="fileroute" HeaderText="fileroute" ReadOnly="True" >
+                    <HeaderStyle Width="30%" />
+                    </asp:BoundField>
+                    <asp:BoundField DataField="result" HeaderText="result" ControlStyle-Width="80%" >
+<ControlStyle Width="100%"></ControlStyle>
+                    <HeaderStyle Width="30%" />
+                    </asp:BoundField>
+                    <asp:CommandField HeaderText="编辑" ShowEditButton="True" >
+                    <HeaderStyle Width="5%" />
+                    </asp:CommandField>
+                </Columns>
+            </asp:GridView>
+        </div>
+        <div class="panel-body">
+            <h5>SPF文件签名信息（表SPF_QZ_File_Signatureinfo）</h5>
+        </div>
+        <div class="panel-body">
+            <asp:GridView ID="GridView_SPF_QZ_File_Signatureinfo" runat="server" CssClass="EU_DataTable" AutoGenerateColumns="False">
+                <Columns>
+                    <asp:BoundField DataField="DocumentName" HeaderText="DocumentName" />
+                    <asp:BoundField DataField="role" HeaderText="role" />
+                    <asp:BoundField DataField="person" HeaderText="person" />
+                    <asp:BoundField DataField="Discipline" HeaderText="Discipline" />
+                    <asp:BoundField DataField="ApproveDate" HeaderText="ApproveDate" />
+                </Columns>
+            </asp:GridView>
+        </div>
+    </div>
+    <br />
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h4><span class="label label-success">CPMS中间库</span></h4>
+        </div>
+        <div class="panel-body">
+            <h5>CPMS签章文件信息（表CPMS_sync_drawinginfo）</h5>
+        </div>
+        <div class="panel-body">
+            <asp:GridView ID="GridView_CPMS_sync_drawinginfo" runat="server" CssClass="EU_DataTable" AutoGenerateColumns="False" DataKeyNames="Common_id" OnRowCancelingEdit="GridView_CPMS_sync_drawinginfo_RowCancelingEdit" OnRowEditing="GridView_CPMS_sync_drawinginfo_RowEditing" OnRowUpdating="GridView_CPMS_sync_drawinginfo_RowUpdating">
+                <Columns>
+                    <asp:BoundField DataField="common_id" HeaderText="common_id" ReadOnly="True" ControlStyle-Width="80%">
+                    </asp:BoundField>
+                    <asp:BoundField DataField="picnumber" HeaderText="picnumber" ReadOnly="True" />
+                    <asp:BoundField DataField="picname" HeaderText="picname" ControlStyle-Width="100%" />
+                    <asp:BoundField DataField="annex" HeaderText="annex" ControlStyle-Width="100%" />
+                    <asp:BoundField DataField="special" HeaderText="special" ReadOnly="True" />
+                    <asp:BoundField DataField="specnumber" HeaderText="specnumber" ReadOnly="True" />
+                    <asp:BoundField DataField="piccount" HeaderText="piccount" ControlStyle-Width="80%" />
+                    <asp:BoundField DataField="a1" HeaderText="a1" ControlStyle-Width="80%" />
+                    <asp:BoundField DataField="projectname" HeaderText="projectname" ReadOnly="True" />
+                    <asp:BoundField DataField="pltannex" HeaderText="pltannex" ControlStyle-Width="100%" />
+                    <asp:BoundField DataField="printstylename" HeaderText="printstylename" ReadOnly="True" />
+                    <asp:BoundField DataField="printfilename" HeaderText="printfilename" ReadOnly="True" />
+                    <asp:BoundField DataField="diye" HeaderText="diye" ControlStyle-Width="80%" />
+                    <asp:BoundField DataField="gongye" HeaderText="gongye" ControlStyle-Width="80%" />
+                    <asp:BoundField DataField="miji" HeaderText="miji" ControlStyle-Width="80%" />
+                    <asp:BoundField DataField="states" HeaderText="states" ReadOnly="True" />
+                    <asp:CommandField HeaderText="编辑" ShowEditButton="True" />
+                </Columns>
+            </asp:GridView>
+        </div>
+        <div class="panel-body">
+            <h5>CPMS文件上传信息（表CPMS_sync_fileinfo）</h5>
+        </div>
+        <div class="panel-body">
+            <asp:GridView ID="GridView_CPMS_sync_fileinfo" runat="server" CssClass="EU_DataTable" AutoGenerateColumns="False">
+                <Columns>
+                    <asp:BoundField DataField="common_id" HeaderText="common_id" />
+                    <asp:BoundField DataField="filesrc" HeaderText="filesrc" />
+                    <asp:BoundField DataField="fileuid" HeaderText="fileuid" />
+                    <asp:BoundField DataField="filename" HeaderText="filename" />
+                    <asp:BoundField DataField="ftpaddress" HeaderText="ftpaddress" />
+                    <asp:BoundField DataField="fileext" HeaderText="fileext" />
+                </Columns>
+            </asp:GridView>
+        </div>
+    </div>
+</asp:Content>

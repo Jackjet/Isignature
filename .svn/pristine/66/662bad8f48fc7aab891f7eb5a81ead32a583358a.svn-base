@@ -1,0 +1,239 @@
+﻿using IsignatureMaintain.Class;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace IsignatureMaintain.Views
+{
+    public partial class ResultSearch : System.Web.UI.Page
+    {
+        //定义条件变量
+        public string ConditionStr = "";
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+            /*
+             * 选择条件组合
+            */
+            ConditionStr = "";
+            if (!TextBox_DOC_NAME.Text.Trim().Equals(""))
+            {
+                //获取$符号后面字符串
+                string Doc_Name = TextBox_DOC_NAME.Text.Trim().Substring(TextBox_DOC_NAME.Text.Trim().LastIndexOf("$") + 1);
+                ConditionStr = " and DOC_NAME like '%" + Doc_Name + "%'";
+            }
+            if (!TextBox_DOC_TYPE.Text.Trim().Equals(""))
+                ConditionStr += " and DOC_TYPE like '%" + TextBox_DOC_TYPE.Text.Trim() + "%'";
+            if (!TextBox_ErrorMsg.Text.Trim().Equals(""))
+                ConditionStr += " and ErrorMsg like '%" + TextBox_ErrorMsg.Text.Trim() + "%'";
+            if (!TextBox_USRNAME.Text.Trim().Equals(""))
+                ConditionStr += " and USRNAME like '%" + TextBox_USRNAME.Text.Trim() + "%'";
+            if (!DropDownList_DOC_STATUS.Text.Trim().Equals(""))
+            {
+                if (DropDownList_DOC_STATUS.Text.Trim().Equals("代签"))
+                    ConditionStr += " and DOC_STATUS = '1'";
+                if (DropDownList_DOC_STATUS.Text.Trim().Equals("成功"))
+                    ConditionStr += " and DOC_STATUS = '2'";
+                if (DropDownList_DOC_STATUS.Text.Trim().Equals("失败"))
+                    ConditionStr += " and DOC_STATUS = '3'";
+                if (DropDownList_DOC_STATUS.Text.Trim().Equals("正在盖章"))
+                    ConditionStr += " and DOC_STATUS = '6'";
+            }
+
+            if (!IsPostBack)   //页面第一次加载
+            {
+                Init_SIGN_DOCNUMET_INSIG_INFO_Bak();
+                /*******************************************
+                 * 数据绑定
+                 *******************************************/
+                this.GridView_IsigResult.DataSource = GetData(ConditionStr);
+                this.GridView_IsigResult.DataBind();
+            }
+
+
+            //Init_SIGN_DOCNUMET_INSIG_INFO_Bak();
+        }
+
+
+        /*数据库连接字符创*/
+        string SQLCON_Isignature = ConfigurationManager.ConnectionStrings["SQLCON_Isignature"].ToString();
+        string SQLCON_DWH = ConfigurationManager.ConnectionStrings["SQLCON_DWH"].ToString();
+        string SQLCON_COPT6 = ConfigurationManager.ConnectionStrings["SQLCON_COPT6"].ToString();
+
+
+        //数据初始化，先清空删除，再插入数据
+        public void Init_SIGN_DOCNUMET_INSIG_INFO_Bak()
+        {
+            //更新表格SIGN_DOCNUMET_INSIG_INFO_Bak数据
+            string updatesql = "update p set p.DOC_UNIQUE = u.DOC_UNIQUE,p.DOC_NAME = u.DOC_NAME,p.DOC_STATUS = u.DOC_STATUS, p.CREATE_TIME = u.CREATE_TIME,p.ErrorMsg = u.ErrorMsg,p.STATUS = u.STATUS from [SIGN_DOCNUMET_INSIG_INFO_Bak] p, view_signinfo u where p.[DOC_REAL_NAME] = u.[DOC_REAL_NAME]";
+            //this.Response.Write("<script>alert('" + DOC_REAL_NAME + "');</script>");
+            noQuery(updatesql, SQLCON_Isignature);
+
+            //删除所有数据
+            //string deletesql = "DELETE FROM dbo.SIGN_DOCNUMET_INSIG_INFO_Bak";
+            //noQuery(deletesql, SQLCON_Isignature);
+
+            ////插入没属性全的
+            //string insert_allpropt = " INSERT INTO [dbo].[SIGN_DOCNUMET_INSIG_INFO_Bak]([DOC_UNIQUE],[DOC_NAME],[DOC_REAL_NAME],[DOC_TYPE],[DOC_STATUS],[CREATE_TIME],[ErrorMsg],[STATUS],[USRNAME],[USRCODE])(SELECT SIGN_DOCNUMET.DOC_UNIQUE,SIGN_DOCNUMET.DOC_NAME,SUBSTRING(SIGN_DOCNUMET.DOC_DOCUMENTID, 10, 40) AS DOC_REAL_NAME,SIGN_DOCNUMET.DOC_TYPE, SIGN_DOCNUMET.DOC_STATUS, SIGN_DOCNUMET.CREATE_TIME, SIGN_DOCNUMET.ErrorMsg, CASE WHEN SIGN_DOCNUMET.DOC_STATUS = '2' THEN '成功' WHEN SIGN_DOCNUMET.DOC_STATUS = '3' THEN '失败' WHEN SIGN_DOCNUMET.DOC_STATUS = '1' THEN '代签' WHEN SIGN_DOCNUMET.DOC_STATUS = '6' THEN '正在盖章'END AS STATUS,SIGN_TEMPLATE_CAD.SIGN_NAME AS [USRNAME],SIGN_TEMPLATE_CAD.SIGN_KEY AS [USRCODE]FROM SIGN_DOCNUMET,REL_DOC_STEMP,SIGN_TEMPLATE_CAD WHERE SIGN_DOCNUMET.DOC_UNIQUE = REL_DOC_STEMP.DOC_UNIQUE AND REL_DOC_STEMP.TEMPLATE_UNIQUE = SIGN_TEMPLATE_CAD.TEMPLATE_UNIQUE AND SIGN_DOCNUMET.DOC_UNIQUE IN(SELECT   MAX(DOC_UNIQUE) AS Expr1 FROM  SIGN_DOCNUMET AS SIGN_DOCNUMET_1 WHERE   (DOC_DOCUMENTID LIKE '%@%') GROUP BY SUBSTRING(DOC_DOCUMENTID, 10, 45)) AND MARK_NAME='设计'  AND CREATE_TIME>='2016.09.01' UNION (SELECT SIGN_DOCNUMET.DOC_UNIQUE,SIGN_DOCNUMET.DOC_NAME, SUBSTRING(SIGN_DOCNUMET.DOC_DOCUMENTID, 10, 40) AS DOC_REAL_NAME, SIGN_DOCNUMET.DOC_TYPE, SIGN_DOCNUMET.DOC_STATUS, SIGN_DOCNUMET.CREATE_TIME, SIGN_DOCNUMET.ErrorMsg,CASE WHEN SIGN_DOCNUMET.DOC_STATUS = '2' THEN '成功' WHEN SIGN_DOCNUMET.DOC_STATUS = '3' THEN '失败' WHEN SIGN_DOCNUMET.DOC_STATUS = '1' THEN '代签' WHEN SIGN_DOCNUMET.DOC_STATUS = '6' THEN '正在盖章' END AS STATUS,SIGN_TEMPLATE_WPS.SIGN_NAME AS [USRNAME],SIGN_TEMPLATE_WPS.SIGN_KEY AS [USRCODE] FROM SIGN_DOCNUMET,REL_DOC_STEMP,SIGN_TEMPLATE_WPS WHERE SIGN_DOCNUMET.DOC_UNIQUE = REL_DOC_STEMP.DOC_UNIQUE AND REL_DOC_STEMP.TEMPLATE_UNIQUE = SIGN_TEMPLATE_WPS.TEMPLATE_UNIQUE AND SIGN_DOCNUMET.DOC_UNIQUE IN (SELECT   MAX(DOC_UNIQUE) AS Expr1 FROM  SIGN_DOCNUMET AS SIGN_DOCNUMET_1  GROUP BY SUBSTRING(DOC_DOCUMENTID, 10, 45))AND MARK_NAME='设计' AND CREATE_TIME>='2016.09.01'))";
+            //noQuery(insert_allpropt, SQLCON_Isignature);
+
+            ////插入没有设计人账户的
+            //string insert_noname = "INSERT INTO [dbo].[SIGN_DOCNUMET_INSIG_INFO_Bak]([DOC_UNIQUE],[DOC_NAME],[DOC_REAL_NAME],[DOC_TYPE],[DOC_STATUS],[CREATE_TIME],[ErrorMsg],[STATUS]) (SELECT   DOC_UNIQUE, DOC_NAME, SUBSTRING(DOC_DOCUMENTID, 10, 45) AS DOC_REAL_NAME, DOC_TYPE, DOC_STATUS, CREATE_TIME, ErrorMsg, CASE WHEN DOC_STATUS = '2' THEN '成功' WHEN DOC_STATUS = '3' THEN '失败' WHEN DOC_STATUS = '1' THEN '代签' WHEN DOC_STATUS = '6' THEN '正在盖章' END AS STATUS FROM  SIGN_DOCNUMET WHERE  (DOC_UNIQUE IN (SELECT   MAX(DOC_UNIQUE) AS Expr1 FROM  SIGN_DOCNUMET AS SIGN_DOCNUMET_1  GROUP BY SUBSTRING(DOC_DOCUMENTID, 10, 45))) and DOC_UNIQUE not in (select DOC_UNIQUE from SIGN_DOCNUMET_INSIG_INFO_Bak) AND CREATE_TIME>='2016.09.01')";
+            //noQuery(insert_noname, SQLCON_Isignature);
+
+            //插入新数据，不带设计人信息
+            string insert_noname = "INSERT INTO [dbo].[SIGN_DOCNUMET_INSIG_INFO_Bak]([DOC_UNIQUE],[DOC_NAME],[DOC_REAL_NAME],[DOC_TYPE],[DOC_STATUS],[CREATE_TIME],[ErrorMsg],[STATUS],[Remark])(SELECT [DOC_UNIQUE],[DOC_DOCUMENTID] as [DOC_NAME],SUBSTRING(DOC_DOCUMENTID,10,40) as [DOC_REAL_NAME],[DOC_TYPE],[DOC_STATUS],[CREATE_TIME],[ErrorMsg],CASE WHEN SIGN_DOCNUMET.DOC_STATUS = '2' THEN '成功' WHEN SIGN_DOCNUMET.DOC_STATUS = '3' THEN '失败' WHEN SIGN_DOCNUMET.DOC_STATUS = '1' THEN '代签' WHEN SIGN_DOCNUMET.DOC_STATUS = '6' THEN '正在盖章' END AS [DOC_STATUS],'请选择' as Remark FROM dbo.SIGN_DOCNUMET WHERE DOC_UNIQUE IN(SELECT MAX(DOC_UNIQUE) FROM dbo.SIGN_DOCNUMET WHERE DOC_DOCUMENTID LIKE '%@%' AND CREATE_TIME>='2016.09.01' GROUP BY SUBSTRING(DOC_DOCUMENTID,10,40)) AND SUBSTRING(DOC_DOCUMENTID,10,40)  NOT IN (SELECT [DOC_REAL_NAME] FROM SIGN_DOCNUMET_INSIG_INFO_Bak))";
+            noQuery(insert_noname, SQLCON_Isignature);
+        }
+
+        //执行sql语句
+        public void noQuery(string sql, string SQLCON)
+        {
+            SqlConnection conn = new SqlConnection(SQLCON);
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        //返回sql查询数据存入datatable
+        public DataTable GetData(string ConditionStr)
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(SQLCON_Isignature);
+            conn.Open();
+            StringBuilder sql_isign = new StringBuilder();
+            sql_isign.AppendFormat("SELECT [DOC_UNIQUE],[DOC_NAME],[DOC_REAL_NAME],[DOC_TYPE],[DOC_STATUS],[CREATE_TIME],[ErrorMsg],[STATUS],[USRNAME],[USRCODE],[Remark] FROM [MyDataBase].[dbo].[SIGN_DOCNUMET_INSIG_INFO_Bak] WHERE  DOC_UNIQUE!='' " + ConditionStr + " order by DOC_UNIQUE desc");
+            SqlDataAdapter ad = new SqlDataAdapter(sql_isign.ToString(), conn);
+            ad.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+
+        //返回sql查询数据存入datatable
+        public DataTable GetData1(string sqlstr)
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(SQLCON_Isignature);
+            conn.Open();
+            StringBuilder sql_isign = new StringBuilder();
+            sql_isign.AppendFormat(sqlstr);
+            SqlDataAdapter ad = new SqlDataAdapter(sql_isign.ToString(), conn);
+            ad.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+
+        protected void Button_Seach_Click(object sender, EventArgs e)
+        {
+            Init_SIGN_DOCNUMET_INSIG_INFO_Bak();     
+            this.GridView_IsigResult.DataSource = GetData(ConditionStr);
+            this.GridView_IsigResult.DataBind();
+        }
+
+
+        /********
+         * GridView翻页
+         ********/
+        protected void GridView_IsigResult_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            GridView_IsigResult.PageIndex = e.NewPageIndex;
+            this.GridView_IsigResult.DataSource = GetData(ConditionStr);
+            GridView_IsigResult.DataBind();
+        }
+
+
+
+        protected void GridView_IsigResult_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            string cmd = e.CommandName.Trim();
+            
+            try
+            {
+                //获取选中行索引值
+                //GridViewRow gvr = (GridViewRow)((Control)e.CommandSource).Parent.Parent;
+                GridViewRow gvr = ((GridViewRow)(((Button)(e.CommandSource)).Parent.Parent)); 
+
+                //根据索引值获取某列的值
+                string DOC_NAME = ((HyperLink)(GridView_IsigResult.Rows[gvr.RowIndex].Cells[1].Controls[0])).Text;   //列属性为HyperLink，获取值要麻烦些
+                
+                //string cc = GridView_IsigResult.Rows[gvr.RowIndex].Cells[3].Text;     //普通列获值
+                string DOC_REAL_NAME = DOC_NAME.Substring(9);
+                string FailReason = ((DropDownList)(GridView_IsigResult.Rows[gvr.RowIndex].FindControl("DropDownList_FailReason"))).SelectedValue;  //获取dropdownlist的值
+                //如果点击重签执行以下操作
+                if (cmd == "Resign")
+                {
+                    //加入文件名中含有@，代表是集成化过来图纸
+                    if (DOC_NAME.Contains("@"))
+                    {
+                        if (FailReason.Equals("请选择"))
+                        {
+                            this.Response.Write("<script>alert('请选择重签原因,再进行重签操作！');</script>");
+                            return;
+                        }
+                        //更新SPF中间表state值，进行重签操作
+                        string updatesql = "UPDATE [DWH].[dbo].[SPF_QZ_File_Info] SET state=0 WHERE filename = '" + DOC_REAL_NAME + "'";
+                        //this.Response.Write("<script>alert('" + DOC_REAL_NAME + "');</script>");
+                        noQuery(updatesql, SQLCON_DWH);                      
+                    }
+                    else
+                    {
+                        string updatesql = "UPDATE [MyDataBase].[dbo].[SIGN_DOCNUMET] SET DOC_STATUS=1,ErrorMsg=null,WRITELOG='N' WHERE DOC_DOCUMENTID = '" + DOC_NAME + "'";
+                        //this.Response.Write("<script>alert('" + DOC_REAL_NAME + "');</script>");
+                        noQuery(updatesql, SQLCON_Isignature);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //输出错误信息
+                //this.Response.Write("<script>alert('重签失败');</script>");
+                //return;
+            }
+
+            Init_SIGN_DOCNUMET_INSIG_INFO_Bak();    //页面数据绑定重新刷新
+
+        }
+
+        protected void GridView_IsigResult_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            //列值不为"成功"的标记颜色
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                DataRowView drv = (DataRowView)e.Row.DataItem;
+
+                if (!drv.Row["Remark"].ToString().Trim().Equals("请选择"))
+                {
+                    e.Row.BackColor = System.Drawing.Color.Linen;
+                }
+                if (!drv.Row["STATUS"].ToString().Trim().Equals("成功"))
+                {
+                    e.Row.BackColor = System.Drawing.Color.OrangeRed;
+                }
+            }
+        }
+
+        protected void DropDownList_FailReason_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DropDownList ddl = (DropDownList)sender;
+            GridViewRow gvr = (GridViewRow)ddl.Parent.Parent;       //获取当前行
+            string DOC_REAL_NAME = ((HyperLink)(GridView_IsigResult.Rows[gvr.RowIndex].Cells[2].Controls[0])).Text;   //列属性为HyperLink，获取该行的空间值，获取值要麻烦些
+            string FailReason = ((DropDownList)(GridView_IsigResult.Rows[gvr.RowIndex].FindControl("DropDownList_FailReason"))).SelectedValue;  //获取dropdownlist的值
+            //更新数据表的值（失败原因）
+            string updatesql = "UPDATE [MyDataBase].[dbo].[SIGN_DOCNUMET_INSIG_INFO_Bak] SET Remark ='" + FailReason + "' WHERE [DOC_REAL_NAME] = '" + DOC_REAL_NAME + "'";
+            //this.Response.Write("<script>alert('" + DOC_REAL_NAME + "');</script>");
+            noQuery(updatesql, SQLCON_Isignature);
+        }
+
+    }
+}

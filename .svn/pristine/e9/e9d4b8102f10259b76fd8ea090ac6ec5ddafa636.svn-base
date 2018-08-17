@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace IsignatureMaintain.Views
+{
+    public partial class FileSignature : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            int tag = 1;      //定义标记，标记是超链接进入还是单独页面进入。1位传参链接进入，0为菜单页面进入
+            try
+            {
+                Label1.Text = "文件" + Request.QueryString["DOC_NAME"] + "的签名信息如下：";
+                Label1.CssClass = "label label-success";
+                string DOC_UNIQUE = Request.QueryString["DOC_UNIQUE"];
+                string DOC_TYPE = Request.QueryString["DOC_TYPE"].Substring(1);
+                this.GridView＿SignatureDetail.DataSource = GetData(DOC_TYPE, DOC_UNIQUE);
+                this.GridView＿SignatureDetail.DataBind();
+            }
+            catch
+            {
+                //菜单页面进入
+                tag = 0;
+            }
+
+            //传参链接进入，不显示div1。菜单页面进入现实div1
+            if (tag == 0)
+            {
+                div1.Visible = true;
+            }
+            if (tag == 1)
+            {
+                div1.Visible = false;
+            }
+        }
+
+        string SQLCON_Isignature = ConfigurationManager.ConnectionStrings["SQLCON_Isignature"].ToString();
+
+
+        //获取签名信息（传参链接进入，依据地址栏传递参数“DOC_TYPE”，“DOC_UNIQUE”返回签名信息）
+        public DataTable GetData(string DOC_TYPE, string DOC_UNIQUE)
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(SQLCON_Isignature);
+            StringBuilder sql = new StringBuilder();
+            string SelectSQL = "";
+
+            /*
+             * 依据文件后缀，选择不同的表，嵌套搜索文件签名详情
+             * */
+            if (DOC_TYPE.ToLower().Contains("doc") || DOC_TYPE.ToLower().Contains("xls"))
+                SelectSQL = "select [TEMPLATE_UNIQUE],[MARK_NAME],[SIGN_KEY],[KEY_TYPE],[KEY_PWD],[SIGN_TYPE],[SIGN_NAME],[TEMP_MODE],[BOOKMARK_NAME] from [MyDataBase].[dbo].[SIGN_TEMPLATE_WPS] where TEMPLATE_UNIQUE in (SELECT  [TEMPLATE_UNIQUE] FROM [MyDataBase].[dbo].[REL_DOC_STEMP] where DOC_UNIQUE = '" + DOC_UNIQUE + "')";
+            if (DOC_TYPE.ToLower().Contains("pdf"))
+                SelectSQL = "select [TEMPLATE_UNIQUE],[TEMPLATE_NAME],[SIGN_KEY],[KEY_TYPE],[SIGN_PWD],[SIGN_TYPE],[SIGN_NAME],[TEMP_PAGE],[TEMP_MODE],[TEMP_POSITION] from [MyDataBase].[dbo].[SIGN_TEMPLATE_PDF] where TEMPLATE_UNIQUE in (SELECT  [TEMPLATE_UNIQUE] FROM [MyDataBase].[dbo].[REL_DOC_STEMP] where DOC_UNIQUE = '" + DOC_UNIQUE + "')";
+            if (DOC_TYPE.ToLower().Contains("dwg"))
+                SelectSQL = "select [TEMPLATE_UNIQUE],[MARK_NAME],[SIGN_KEY],[SIGN_NAME],[DWG_SPACE],[SIGN_MODE],[SIGN_TEXT] from [MyDataBase].[dbo].[SIGN_TEMPLATE_CAD] where TEMPLATE_UNIQUE in (SELECT  [TEMPLATE_UNIQUE] FROM [MyDataBase].[dbo].[REL_DOC_STEMP] where DOC_UNIQUE = '" + DOC_UNIQUE + "')";
+            sql.AppendFormat(SelectSQL);
+            SqlDataAdapter ad = new SqlDataAdapter(sql.ToString(), conn);
+            ad.Fill(dt);
+            return dt;
+        }
+
+
+
+        //获取签名信息（菜单页面进入，依据搜索栏的文件名，获取 “DOC_TYPE”，“DOC_DOCUMENTID”返回签名信息）
+        public DataTable GetData_New(string DOC_TYPE, string DOC_DOCUMENTID)
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(SQLCON_Isignature);
+            StringBuilder sql = new StringBuilder();
+            string SelectSQL = "";
+
+            /*
+             * 依据文件后缀，选择不同的表，嵌套搜索文件签名详情
+             * */
+            if (DOC_TYPE.ToLower().Contains("doc") || DOC_TYPE.ToLower().Contains("xls") || DOC_TYPE.ToLower().Contains("pdf") || DOC_TYPE.ToLower().Contains("dwg"))
+            {
+                if (DOC_TYPE.ToLower().Contains("doc") || DOC_TYPE.ToLower().Contains("xls"))
+                    SelectSQL = "SELECT * FROM SIGN_TEMPLATE_WPS WHERE TEMPLATE_UNIQUE IN(SELECT TEMPLATE_UNIQUE FROM dbo.REL_DOC_STEMP WHERE DOC_UNIQUE IN (SELECT DOC_UNIQUE FROM [dbo].[SIGN_DOCNUMET]  where DOC_DOCUMENTID like '%" + DOC_DOCUMENTID + "%'))";
+                if (DOC_TYPE.ToLower().Contains("pdf"))
+                    SelectSQL = "SELECT * FROM SIGN_TEMPLATE_PDF WHERE TEMPLATE_UNIQUE IN(SELECT TEMPLATE_UNIQUE FROM dbo.REL_DOC_STEMP WHERE DOC_UNIQUE IN (SELECT DOC_UNIQUE FROM [dbo].[SIGN_DOCNUMET]  where DOC_DOCUMENTID like '%" + DOC_DOCUMENTID + "%'))";
+                if (DOC_TYPE.ToLower().Contains("dwg"))
+                    SelectSQL = "SELECT * FROM SIGN_TEMPLATE_CAD WHERE TEMPLATE_UNIQUE IN(SELECT TEMPLATE_UNIQUE FROM dbo.REL_DOC_STEMP WHERE DOC_UNIQUE IN (SELECT DOC_UNIQUE FROM [dbo].[SIGN_DOCNUMET] where DOC_DOCUMENTID like '%" + DOC_DOCUMENTID + "%'))";
+            }
+            else
+            {
+                //输出错误信息
+                this.Response.Write("<script>alert('请输入正确的文件格式！');</script>");
+                return null;
+            }
+            sql.AppendFormat(SelectSQL);
+            SqlDataAdapter ad = new SqlDataAdapter(sql.ToString(), conn);
+            ad.Fill(dt);
+            return dt;
+        }
+        protected void Search_Button_Click(object sender, EventArgs e)
+        {
+            string DOC_DOCUMENTID = FileName_TextBox.Text.ToString().Trim();   //获取文件名
+            string DOC_TYPE = "";
+            try
+            {
+                DOC_TYPE = DOC_DOCUMENTID.Substring(DOC_DOCUMENTID.IndexOf(".") + 1, 3);   //获取文件后缀名（前三位）
+            }
+            catch
+            {
+                //输出错误信息
+                this.Response.Write("<script>alert('请输入正确的文件格式！');</script>");
+                return;
+            }
+            //数据绑定
+            this.GridView＿SignatureDetail.DataSource = GetData_New(DOC_TYPE, DOC_DOCUMENTID);
+            this.GridView＿SignatureDetail.DataBind();
+        }
+    }
+}

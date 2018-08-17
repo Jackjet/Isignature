@@ -1,0 +1,100 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.DirectoryServices;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+
+
+namespace IsignatureMaintain
+{
+    public partial class Login : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        public string message = "";
+        public string SQLCON_Isignature = ConfigurationManager.ConnectionStrings["SQLCON_Isignature"].ToString();
+        protected void Button_Login_Click(object sender, EventArgs e)
+        {
+            //获取输入的用户名密码，初始化域名称
+            string userName = this.TextBox_username.Text.ToString().Trim();
+            string password = this.TextBox_password.Text.ToString().Trim();
+            string domain = "snec";
+
+            //验证用户是否有权限登录以及用户能否域验证通过
+            bool isAllowed = IsAllowLogin(userName);
+            bool isAuthenticated = AuthenticateAD(userName, password, domain);
+            if (isAuthenticated == true && isAllowed == true)
+            {
+                Response.Redirect("ResultSearch.aspx", false);
+            }
+            else
+            {
+                Response.Write("<script>alert('您无权登录该系统！');</script>");
+            }
+        }
+
+        /*SQL数据查询，返回datatable*/
+        public DataTable GetData(string selctsql)
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(SQLCON_Isignature);
+            conn.Open();
+            StringBuilder sql_dwh = new StringBuilder();
+            sql_dwh.AppendFormat(selctsql);
+            SqlDataAdapter ad = new SqlDataAdapter(sql_dwh.ToString(), conn);
+            ad.Fill(dt);
+            conn.Close();
+            return dt;
+        }
+
+
+        //验证用户是否被授权允许登录
+        private bool IsAllowLogin(string userName)
+        {
+            string selectsql = "SELECT [id],[usrname] FROM [MyDataBase].[dbo].[LoginUsr] where usrname = '" + userName + "'";
+            DataTable usrData = GetData(selectsql);
+            if (usrData.Rows.Count == 0)
+                return false;
+            else
+                return true;
+        }
+
+        //验证用户是否能通过域认证
+        private bool AuthenticateAD(string userName, string password, string domain)
+        {
+            message = "";
+            DirectoryEntry entry = new
+                DirectoryEntry("LDAP://" + domain, userName, password);
+            try
+            {
+                object obj = entry.NativeObject;
+                DirectorySearcher search = new DirectorySearcher(entry);
+                search.Filter = "(SAMAccountName=" + userName + ")";
+                search.PropertiesToLoad.Add("cn");
+                SearchResult result = search.FindOne();
+                if (null == result)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                this.Response.Write("<script>alert('" + message + "');</script>");
+                return false;
+                //throw new Exception("Error authenticating user. " + ex.Message);
+            }
+            return true;
+        }
+    }
+}

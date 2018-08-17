@@ -1,0 +1,146 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="IsignatureMaintain.Site1" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+    <title>数字化图档运维管理系统</title>
+
+    <link href="<%=ResolveClientUrl("~/css/loading.css") %>" rel="stylesheet" />
+    <%--引用bootstrap框架CSS--%>
+    <link href="<%=ResolveClientUrl("~/css/bootstrap.min.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/bootstrap-select.min.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/Gridview.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/font-awesome.min.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/bootstrap-datetimepicker.css") %>" rel="stylesheet" />
+    <link href="<%=ResolveClientUrl("~/css/bootstrap-datetimepicker.min.css") %>" rel="stylesheet" />
+    <%-- <link href="css/lovely.css" rel="stylesheet" />--%>
+
+    <%--HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries--%>
+    <script src='<%=ResolveUrl("~/js/respond.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/html5shiv.min.js") %>'></script>
+
+    <%--引用bootstrap框架js--%>
+    <script src='<%=ResolveUrl("~/js/jquery-3.1.1.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap-select.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/transition.min.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.min.js") %>'></script>
+
+    <script src='<%=ResolveUrl("~/js/loading.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/chart.js") %>'></script>
+
+    <%--引用js函数--%>
+    <script>
+        $(function () {
+            $("[data-toggle='tooltip']").tooltip();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".navbar-nav li").click(function () {
+                //$(this).siblings().removeClass("active");
+                $(this).addClass("active");
+                //$(this).addClass("active").siblings().removeClass("active");
+            });
+        });
+    </script>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img src="../img/SegLog.jpg" />
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="ResultSearch.aspx">主页</a></li>
+                    <li><a href="SuccssOrFail.aspx">签章结果</a></li>
+                    <%--<li><a href="HistoryVersion.aspx">历史记录</a></li>--%>
+
+                    <%--下拉框--%>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">签名查询 <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="FileSignature.aspx">文件签名详情</a></li>
+                            <li><a href="KeyMaintain.aspx">密钥查询</a></li>
+                            <li><a href="SignMaintain.aspx">签章查询</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">One more separated link</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="FileReSign.aspx">异常处理</a></li>
+                    <li><a href="MidDBInfo.aspx">中间库信息</a></li>
+                    <li><a href="PersonMaintain.aspx">人员维护</a></li>
+                    <li><a href="DataDictMaintain.aspx">数据字典</a></li>
+                    <li><a href="Statistics.aspx">报表统计</a></li>
+                </ul>
+
+                <%--搜索框--%>
+                <form class="navbar-form navbar-left" role="search">
+                    <%--<div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" />
+                    </div>
+                    <button type="submit" class="btn btn-default">Submit</button>--%>
+                </form>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="Login.aspx">注销</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">更多<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <%--<li class="divider"></li>--%>
+                            <li><a href="http://cop.snec.com" target="_blank">协同办公系统</a></li>
+                            <li><a href="http://eddm.snec.com" target="_blank">慧智图档系统</a></li>
+                            <li><a href="http://cpms.snec.com/" target="_blank">综合项目管理系统</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+
+    <form id="form1" runat="server">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder2" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+            </div>
+            <br />
+        </div>
+    </form>
+</body>
+</html>
