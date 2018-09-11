@@ -30,11 +30,11 @@ namespace IsignatureMaintain.views
         {
             DataSet ds = new DataSet();
             //string sqlplt = "SELECT [Id],[FileName],left([FileName],charindex('.',[FileName])-1) as FileNo,[FileExt],[FilePath],[ORGFilePath],[FileHash],[CreateDate] as UploadDate,[Status],[LastUpdateDate],[UserId],[Remark],[PriorityLevel],[Client]  FROM [HNDServer].[dbo].[FilePlotPool] where  Id in(  select max([Id]) FROM [HNDServer].[dbo].[FilePlotPool] where [ORGFilePath] like '%FTP://10.151.131.53%'  group by FileName) and [CreateDate]>='2018.07.02' and [ORGFilePath] like '%FTP://10.151.131.53%' ";
-            string sqlplt = "SELECT [Id],[FileName],left([FileName],charindex('.',[FileName])-1) as FileNo,[ORGFilePath],[CreateDate] as UploadDate,[Status],[LastUpdateDate],[Remark],[Client]  FROM [HNDServer].[dbo].[FilePlotPool] where  Id in(  select max([Id]) FROM [HNDServer].[dbo].[FilePlotPool] where [ORGFilePath] like '%FTP://10.151.131.53%'  group by FileName)  and [ORGFilePath] like '%FTP://10.151.131.53%' and [FileName] not like '%-F-%' ";
+            string sqlplt = "SELECT [Id],[FileName],left([FileName],charindex('.',[FileName])-1) as FileNo,[ORGFilePath],CONVERT(varchar(12) , [CreateDate], 111) as UploadDate,[Status],[LastUpdateDate],[Remark],[Client]  FROM [HNDServer].[dbo].[FilePlotPool] where  Id in(  select max([Id]) FROM [HNDServer].[dbo].[FilePlotPool] where [ORGFilePath] like '%FTP://10.151.131.53%'  group by FileName)  and [ORGFilePath] like '%FTP://10.151.131.53%' and [FileName] not like '%-F-%' ";
             DataTable HananPltDtb = GetData(sqlplt, SQLCON_Hanna);
 
             //string sqlmid = "SELECT  [common_id],[filesrc],[picnumber],[picname],[designer],[uploadtime],[special],[account],[projectnumber],[projectname],[pltannex] FROM [DWH].[dbo].[CPMS_sync_drawinginfo] where filesrc like '%DIS%' AND uploadtime>='2018.07.01'";
-            string sqlmid = "SELECT  [picnumber],[picname],[designer],[uploadtime],[projectname],[pltannex] FROM [DWH].[dbo].[CPMS_sync_drawinginfo] where [filesrc]='DIS'";
+            string sqlmid = "SELECT  [picnumber],[picname],[designer],CONVERT(varchar(12) , [uploadtime], 111) as [uploadtime],[projectname],[pltannex] FROM [DWH].[dbo].[CPMS_sync_drawinginfo] where [filesrc]='DIS'";
             DataTable FileMidDtb = GetData(sqlmid, SQLCON_DWH);
             ds.Tables.Add(HananPltDtb);
             ds.Tables.Add(FileMidDtb);
@@ -80,6 +80,8 @@ namespace IsignatureMaintain.views
                     ConditionStr += " and picnumber  is not null";
                 if (DropDownList_IsWriten.Text.Trim().Equals("未写入"))
                     ConditionStr += " and picnumber is null";
+                if (DropDownList_IsWriten.Text.Trim().Equals("日期不一致"))
+                    ConditionStr += " and UploadDate<>uploadtime and LastUpdateDate>='2018.09.01'";
             }
             //DataRow[] dr = DtUnion.Select("1=1" + ConditionStr, "Id desc");     // 从DtUnion 中查询符合条件的记录； 
 
@@ -142,14 +144,26 @@ namespace IsignatureMaintain.views
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
                 DataRowView drv = (DataRowView)e.Row.DataItem;
-                if (drv.Row["picnumber"].ToString().Trim().Equals(""))
-                {
-                    e.Row.BackColor = System.Drawing.Color.Yellow;
-                }
+
                 if (!drv.Row["STATUS"].ToString().Trim().Equals("03"))
                 {
                     e.Row.BackColor = System.Drawing.Color.LightSalmon;
                 }
+                if (drv.Row["uploadtime"].ToString().Trim().Equals(""))
+                {
+                    e.Row.BackColor = System.Drawing.Color.Yellow;
+                }
+                else 
+                {
+                    string pltdate = Convert.ToDateTime(drv.Row["UploadDate"].ToString().Trim()).ToShortDateString();
+                    //string end = drv.Row["uploadtime"].ToString().Trim();
+                    string enddate = Convert.ToDateTime(drv.Row["uploadtime"].ToString().Trim()).ToShortDateString();
+                    if(pltdate!= enddate)
+                    {
+                        e.Row.BackColor = System.Drawing.Color.Yellow;
+                    }
+                }
+                
             }
         }
 

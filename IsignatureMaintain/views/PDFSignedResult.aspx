@@ -18,6 +18,7 @@
                     <asp:ListItem></asp:ListItem>
                     <asp:ListItem>已写入</asp:ListItem>
                     <asp:ListItem>未写入</asp:ListItem>
+                    <asp:ListItem>日期不一致</asp:ListItem>
                 </asp:DropDownList>
             </div>
         </div>
