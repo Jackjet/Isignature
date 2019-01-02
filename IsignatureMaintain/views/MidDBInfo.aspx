@@ -113,7 +113,7 @@
                         <asp:BoundField DataField="states" HeaderText="states" ReadOnly="True" Visible="False" />
                         <asp:BoundField DataField="designer" HeaderText="designer" />
                         <asp:BoundField DataField="account" HeaderText="account" />
-                        <asp:CommandField HeaderText="编辑" ShowEditButton="True">
+                        <asp:CommandField HeaderText="编辑" ShowEditButton="True" ShowDeleteButton="True">
                             <ControlStyle CssClass="layui-btn layui-btn-xs" />
                         </asp:CommandField>
                     </Columns>

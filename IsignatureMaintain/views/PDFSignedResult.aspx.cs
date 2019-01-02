@@ -31,12 +31,21 @@ namespace IsignatureMaintain.views
             DataSet ds = new DataSet();
             //string sqlplt = "SELECT [Id],[FileName],left([FileName],charindex('.',[FileName])-1) as FileNo,[FileExt],[FilePath],[ORGFilePath],[FileHash],[CreateDate] as UploadDate,[Status],[LastUpdateDate],[UserId],[Remark],[PriorityLevel],[Client]  FROM [HNDServer].[dbo].[FilePlotPool] where  Id in(  select max([Id]) FROM [HNDServer].[dbo].[FilePlotPool] where [ORGFilePath] like '%FTP://10.151.131.53%'  group by FileName) and [CreateDate]>='2018.07.02' and [ORGFilePath] like '%FTP://10.151.131.53%' ";
             string sqlplt = "SELECT [Id],[FileName],left([FileName],charindex('.',[FileName])-1) as FileNo,[ORGFilePath],CONVERT(varchar(12) , [CreateDate], 111) as UploadDate,[Status],[LastUpdateDate],[Remark],[Client]  FROM [HNDServer].[dbo].[FilePlotPool] where  Id in(  select max([Id]) FROM [HNDServer].[dbo].[FilePlotPool] where [ORGFilePath] like '%FTP://10.151.131.53%'  group by FileName)  and [ORGFilePath] like '%FTP://10.151.131.53%' and [FileName] not like '%-F-%' ";
-            DataTable HananPltDtb = GetData(sqlplt, SQLCON_Hanna);
+            DataTable HananPltDtb1 = GetData(sqlplt, SQLCON_Hanna);
+            DataTable HananPltDtb2 = GetData(sqlplt, SQLCON_Hanna1);
+
+            //两个表合并
+            DataTable HananPltDtbCombine = HananPltDtb1.Copy();
+            foreach (DataRow dr in HananPltDtb2.Rows)
+            {
+                HananPltDtbCombine.ImportRow(dr);
+            }
+
 
             //string sqlmid = "SELECT  [common_id],[filesrc],[picnumber],[picname],[designer],[uploadtime],[special],[account],[projectnumber],[projectname],[pltannex] FROM [DWH].[dbo].[CPMS_sync_drawinginfo] where filesrc like '%DIS%' AND uploadtime>='2018.07.01'";
             string sqlmid = "SELECT  [picnumber],[picname],[designer],CONVERT(varchar(12) , [uploadtime], 111) as [uploadtime],[projectname],[pltannex] FROM [DWH].[dbo].[CPMS_sync_drawinginfo] where [filesrc]='DIS'";
             DataTable FileMidDtb = GetData(sqlmid, SQLCON_DWH);
-            ds.Tables.Add(HananPltDtb);
+            ds.Tables.Add(HananPltDtbCombine);
             ds.Tables.Add(FileMidDtb);
 
             //1. 新建DataTable并初始化连接表表结构  
@@ -59,7 +68,7 @@ namespace IsignatureMaintain.views
             DtUnion.Columns.Add("pltannex");
 
             //2. 数据筛选并写入连接表   left join on
-            var query = from rowLeft in HananPltDtb.AsEnumerable()
+            var query = from rowLeft in HananPltDtbCombine.AsEnumerable()
                         join rowRight in FileMidDtb.AsEnumerable() on rowLeft["FileNo"] equals rowRight["picnumber"] into temp
                         from subRight in temp.DefaultIfEmpty()
                         select rowLeft.ItemArray.Concat((subRight == null) ? (FileMidDtb.NewRow().ItemArray) : subRight.ItemArray).ToArray();
@@ -102,6 +111,7 @@ namespace IsignatureMaintain.views
         string SQLCON_COPT6 = ConfigurationManager.ConnectionStrings["SQLCON_COPT6"].ToString();
         string SQLCON_Huizhi = ConfigurationManager.ConnectionStrings["SQLCON_Huizhi"].ToString();
         string SQLCON_Hanna = ConfigurationManager.ConnectionStrings["SQLCON_Hanna"].ToString();
+        string SQLCON_Hanna1 = ConfigurationManager.ConnectionStrings["SQLCON_Hanna1"].ToString();
 
 
 
@@ -153,17 +163,17 @@ namespace IsignatureMaintain.views
                 {
                     e.Row.BackColor = System.Drawing.Color.Yellow;
                 }
-                else 
+                else
                 {
                     string pltdate = Convert.ToDateTime(drv.Row["UploadDate"].ToString().Trim()).ToShortDateString();
                     //string end = drv.Row["uploadtime"].ToString().Trim();
                     string enddate = Convert.ToDateTime(drv.Row["uploadtime"].ToString().Trim()).ToShortDateString();
-                    if(pltdate!= enddate)
+                    if (pltdate != enddate)
                     {
                         e.Row.BackColor = System.Drawing.Color.Yellow;
                     }
                 }
-                
+
             }
         }
 
@@ -191,7 +201,8 @@ namespace IsignatureMaintain.views
                 GridViewRow gvr = ((GridViewRow)(((Button)(e.CommandSource)).Parent.Parent));
 
                 //根据索引值获取某列的值
-                string ID = Grv1.Rows[gvr.RowIndex].Cells[0].Text; ;   //列属性为HyperLink，获取值要麻烦些
+                string ID = Grv1.Rows[gvr.RowIndex].Cells[0].Text;    //列属性为HyperLink，获取值要麻烦些
+                string Client = Grv1.Rows[gvr.RowIndex].Cells[7].Text;
 
                 if (cmd == "ReBuild")
                 {
@@ -200,13 +211,22 @@ namespace IsignatureMaintain.views
 
                     string fileno = filename.Substring(0, filename.IndexOf("."));
                     string guid = Guid.NewGuid().ToString();
-
                     HNDrawingServicesAPI.HNDrawingSevices services = new HNDrawingSevices();
-                    services.SetServicesPath("http://10.151.129.88:8099/api/");
-                    //PlotFileMessage plotfile = services.PlotFile(filepath, fileno, "", "", 1);
-                    //string PlotString = Newtonsoft.Json.JsonConvert.SerializeObject(plotfile);
-                    services.PlotFileAsync(filepath, fileno, "", "", 1, guid);
 
+                    if (Client.Equals("HANNASERVER") || Client.Equals("HANNASERVER1") || Client.Equals("HANNASERVER2"))
+                    {
+                        services.SetServicesPath("http://10.151.129.88:8099/api/");
+                        //PlotFileMessage plotfile = services.PlotFile(filepath, fileno, "", "", 1);
+                        //string PlotString = Newtonsoft.Json.JsonConvert.SerializeObject(plotfile);
+                        services.PlotFileAsync(filepath, fileno, "", "", 1, guid);
+                    }
+                    if (Client.Equals("HANNASERVER3") || Client.Equals("HANNASERVER4"))
+                    {
+                        services.SetServicesPath("http://10.151.129.91:8099/api/");
+                        //PlotFileMessage plotfile = services.PlotFile(filepath, fileno, "", "", 1);
+                        //string PlotString = Newtonsoft.Json.JsonConvert.SerializeObject(plotfile);
+                        services.PlotFileAsync(filepath, fileno, "", "", 1, guid);
+                    }
                     //更新SPF中间表state值，进行重签操作
                     //string updatesql = "UPDATE [dbo].[FilePlotPool] SET [Status]='01' WHERE ID = '" + ID + "'";
                     //noQuery(updatesql, SQLCON_Hanna);

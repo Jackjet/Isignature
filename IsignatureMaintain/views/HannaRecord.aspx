@@ -59,7 +59,12 @@
         <asp:GridView ID="Grv_File" runat="server" AutoGenerateColumns="False" lay-size="sm" AllowPaging="True" PageSize="15" CssClass="layui-table" OnPageIndexChanging="Grv_File_PageIndexChanging" OnRowDataBound="Grv_File_RowDataBound" OnRowCommand="Grv_File_RowCommand">
             <Columns>
                 <asp:BoundField DataField="ID" HeaderText="ID" />
-                <asp:HyperLinkField DataNavigateUrlFields="FileName" DataNavigateUrlFormatString="~/Views/HanaFileCKPLTRcd.aspx?FileName={0}" DataTextField="FileName" HeaderText="FileName" />
+                <asp:TemplateField HeaderText="FileName">
+                    <ItemTemplate>                       
+                        <asp:LinkButton ID="linkbtn1" CommandName="lkbtnClick" runat="server"  CommandArgument='<%# Eval("FileName")+","+Eval("Client")%>'> <%#Eval("FileName") %> </asp:LinkButton>                       
+                    </ItemTemplate>
+                </asp:TemplateField>
+               <%-- <asp:HyperLinkField DataNavigateUrlFields="FileName" DataNavigateUrlFormatString="~/Views/HanaFileCKPLTRcd.aspx?FileName={0}" DataTextField="FileName" HeaderText="FileName" />--%>
                 <asp:BoundField DataField="ORGFilePath" HeaderText="ORGFilePath" />
                 <asp:BoundField DataField="UploadDate" HeaderText="UploadDate" />
                 <asp:BoundField DataField="LastUpdateDate" HeaderText="LastUpdateDate" />

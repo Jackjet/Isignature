@@ -25,7 +25,7 @@ namespace IsignatureMaintain.views
             {
                 //string sql = "SELECT  [Id],[FileName],[FileExt],[FilePath],[ORGFilePath],[FileHash],[UploadDate],[Status],[LastUpdateDate],[UserId],[Remark],[PriorityLevel],[Client] FROM [HNDServer].[dbo].[FileCheckPool]   where Id in(  select max([Id]) FROM [HNDServer].[dbo].[FileCheckPool]  where [ORGFilePath] like '%FTP://10.151.131.53//DIS%' group by FileName) and [ORGFilePath] like '%FTP://10.151.131.53//DIS%'  order by LastUpdateDate desc";
                 string sql = "SELECT  [Id],[FileName],[FileExt],[FilePath],[ORGFilePath],[FileHash],[UploadDate],[Status],[LastUpdateDate],[UserId],[Remark],[PriorityLevel],[Client] FROM [HNDServer].[dbo].[FileCheckPool]   where Id in (  select max([Id]) FROM [HNDServer].[dbo].[FileCheckPool]  where [ORGFilePath] like '%FTP://10.151.131.53//DIS%' and charindex(' ',[FileName])>0 group by left([FileName],charindex(' ',[FileName])-1))and [ORGFilePath] like '%FTP://10.151.131.53//DIS%'  order by LastUpdateDate desc";
-                Grid_Databinding(sql,SQLCON_Hanna);
+                Grid_Databinding(sql, SQLCON_Hanna);
             }
         }
 
@@ -38,9 +38,10 @@ namespace IsignatureMaintain.views
         string SQLCON_COPT6 = ConfigurationManager.ConnectionStrings["SQLCON_COPT6"].ToString();
         string SQLCON_Huizhi = ConfigurationManager.ConnectionStrings["SQLCON_Huizhi"].ToString();
         string SQLCON_Hanna = ConfigurationManager.ConnectionStrings["SQLCON_Hanna"].ToString();
+        string SQLCON_Hanna1 = ConfigurationManager.ConnectionStrings["SQLCON_Hanna1"].ToString();
 
 
-        
+
         public void noQuery(string sql, string SQLCON)
         {
             SqlConnection conn = new SqlConnection(SQLCON);
@@ -50,7 +51,7 @@ namespace IsignatureMaintain.views
             conn.Close();
         }
         /*SQL数据查询，返回datatable*/
-        public DataTable GetData(string selctsql,string SQLCON)
+        public DataTable GetData(string selctsql, string SQLCON)
         {
             DataTable dt = new DataTable();
             SqlConnection conn = new SqlConnection(SQLCON);
@@ -65,12 +66,12 @@ namespace IsignatureMaintain.views
         #endregion
 
         protected void SearchBtn_Click(object sender, EventArgs e)
-        {            
+        {
             string sql = GetConstr();
             Grid_Databinding(sql, SQLCON_Hanna);
         }
 
-        
+
         //获取条件字符串
         public string GetConstr()
         {
@@ -125,10 +126,24 @@ namespace IsignatureMaintain.views
             return ConditionStr;
         }
 
-        public void Grid_Databinding(string sql,string SQLCON)
+        public void Grid_Databinding(string sql, string SQLCON)
         {
             DataTable Dtb = GetData(sql, SQLCON_Hanna);
-            this.Grv_File.DataSource = Dtb;
+            DataTable Dtb1 = GetData(sql, SQLCON_Hanna1);
+
+            //两个表合并
+            DataTable dtbCombine = Dtb.Copy();
+            foreach (DataRow dr in Dtb1.Rows)
+            {
+                dtbCombine.ImportRow(dr);
+            }
+
+            //合并后的表排序
+            DataView dv = dtbCombine.DefaultView;
+            dv.Sort = "LastUpdateDate desc";
+            DataTable dt2 = dv.ToTable();
+
+            this.Grv_File.DataSource = dt2;
             this.Grv_File.DataBind();
         }
 
@@ -154,21 +169,23 @@ namespace IsignatureMaintain.views
         }
 
 
-        
-        
+
+
         protected void Grv_File_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             try
             {
                 string cmd = e.CommandName.Trim();
-                //获取选中行索引值
-                GridViewRow gvr = ((GridViewRow)(((Button)(e.CommandSource)).Parent.Parent));
-
-                //根据索引值获取某列的值
-                string ID = Grv_File.Rows[gvr.RowIndex].Cells[0].Text;    
 
                 if (cmd == "ReBuild")
                 {
+                    //获取选中行索引值
+                    GridViewRow gvr = ((GridViewRow)(((Button)(e.CommandSource)).Parent.Parent));
+
+                    //根据索引值获取某列的值
+                    string ID = Grv_File.Rows[gvr.RowIndex].Cells[0].Text;
+                    string Client = Grv_File.Rows[gvr.RowIndex].Cells[6].Text;
+
                     string filepath = Grv_File.Rows[gvr.RowIndex].Cells[2].Text.Trim();
                     string filename = ((HyperLink)(Grv_File.Rows[gvr.RowIndex].Cells[1].Controls[0])).Text;  //列属性为HyperLink，取值方式不一样
 
@@ -176,13 +193,29 @@ namespace IsignatureMaintain.views
                     string guid = Guid.NewGuid().ToString();
 
                     HNDrawingServicesAPI.HNDrawingSevices services = new HNDrawingSevices();
-                    services.SetServicesPath("http://10.151.129.88:8099/api/");
-                    //PlotFileMessage plotfile = services.PlotFile(filepath, fileno, "", "", 1);
-                    //string PlotString = Newtonsoft.Json.JsonConvert.SerializeObject(plotfile);
-                    services.PlotFileAsync(filepath, fileno, "", "", 1, guid);
+
+                    if (Client.Equals("HANNASERVER") || Client.Equals("HANNASERVER1") || Client.Equals("HANNASERVER2"))
+                    {
+                        services.SetServicesPath("http://10.151.129.88:8099/api/");
+                        //PlotFileMessage plotfile = services.PlotFile(filepath, fileno, "", "", 1);
+                        //string PlotString = Newtonsoft.Json.JsonConvert.SerializeObject(plotfile);
+                        services.PlotFileAsync(filepath, fileno, "", "", 1, guid);
+                    }
+                    if (Client.Equals("HANNASERVER3") || Client.Equals("HANNASERVER4"))
+                    {
+                        services.SetServicesPath("http://10.151.129.91:8099/api/");
+                        //PlotFileMessage plotfile = services.PlotFile(filepath, fileno, "", "", 1);
+                        //string PlotString = Newtonsoft.Json.JsonConvert.SerializeObject(plotfile);
+                        services.PlotFileAsync(filepath, fileno, "", "", 1, guid);
+                    }
                     //更新SPF中间表state值，进行重签操作
                     //string updatesql = "UPDATE [dbo].[FilePlotPool] SET [Status]='01' WHERE ID = '" + ID + "'";
                     //noQuery(updatesql, SQLCON_Hanna);
+                }
+                if(cmd== "lkbtnClick")
+                {
+                    object[] arguments = e.CommandArgument.ToString().Split(',');
+                    Response.Redirect("~/Views/HanaFileCKPLTRcd.aspx?FileName=" + arguments[0].ToString() + "&Client=" + arguments[1].ToString());
                 }
             }
             catch { }
