@@ -187,8 +187,9 @@ namespace IsignatureMaintain.views
                     string Client = Grv_File.Rows[gvr.RowIndex].Cells[6].Text;
 
                     string filepath = Grv_File.Rows[gvr.RowIndex].Cells[2].Text.Trim();
-                    string filename = ((HyperLink)(Grv_File.Rows[gvr.RowIndex].Cells[1].Controls[0])).Text;  //列属性为HyperLink，取值方式不一样
-
+                    //string filename = Grv_File.Rows[gvr.RowIndex].Cells[1].Text.Trim();
+                    LinkButton lb1 = (LinkButton)Grv_File.Rows[gvr.RowIndex].Cells[1].FindControl("linkbtn1");   //列属性为HyperLink，取值方式不一样
+                    string filename = lb1.Text.ToString();
                     string fileno = filename.Substring(0, filename.IndexOf("."));
                     string guid = Guid.NewGuid().ToString();
 

@@ -112,6 +112,7 @@
     <Content Include="js\bootstrap.js" />
     <Content Include="js\bootstrap.min.js" />
     <Content Include="js\chart.js" />
+    <Content Include="js\echarts.js" />
     <Content Include="js\html5shiv.min.js" />
     <Content Include="js\jquery-3.1.1.min.js" />
     <Content Include="js\jquery.backstretch.js" />

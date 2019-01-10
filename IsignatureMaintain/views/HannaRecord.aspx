@@ -61,7 +61,7 @@
                 <asp:BoundField DataField="ID" HeaderText="ID" />
                 <asp:TemplateField HeaderText="FileName">
                     <ItemTemplate>                       
-                        <asp:LinkButton ID="linkbtn1" CommandName="lkbtnClick" runat="server"  CommandArgument='<%# Eval("FileName")+","+Eval("Client")%>'> <%#Eval("FileName") %> </asp:LinkButton>                       
+                        <asp:LinkButton ID="linkbtn1" CommandName="lkbtnClick" runat="server"  CommandArgument='<%# Eval("FileName")+","+Eval("Client")%>' Text='<%#Eval("FileName") %>'>  </asp:LinkButton>                       
                     </ItemTemplate>
                 </asp:TemplateField>
                <%-- <asp:HyperLinkField DataNavigateUrlFields="FileName" DataNavigateUrlFormatString="~/Views/HanaFileCKPLTRcd.aspx?FileName={0}" DataTextField="FileName" HeaderText="FileName" />--%>

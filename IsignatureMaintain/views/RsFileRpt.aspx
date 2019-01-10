@@ -5,47 +5,133 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+        <legend>设计成品一体化流程线上签名报表</legend>
+    </fieldset>
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <%--<div class="layui-card-header">投资/费用/维修项目支出金额</div>--%>
+            <div class="layui-card-body">
+                <div id="div_chart_FileCount">
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-1">
-                <h5>选择年份：</h5>
-            </div>
-            <div class="col-lg-3">
-                <asp:DropDownList ID="DropDownList1" runat="server" CssClass="selectpicker show-tick">
-                    <asp:ListItem>请选择</asp:ListItem>
-                    <asp:ListItem>2016</asp:ListItem>
-                    <asp:ListItem>2017</asp:ListItem>
-                    <asp:ListItem>2018</asp:ListItem>
-                </asp:DropDownList>
-            </div>
-            <div class="col-lg-4">
-                <asp:Button ID="Calcul" runat="server" Text="报表统计" CssClass="btn btn-primary btn-sm" OnClick="Calcul_Click" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <asp:Chart ID="Chart1" runat="server" BackColor="Linen" BackImageTransparentColor="LightCyan" BackSecondaryColor="White" Height="805px" Width="1468px">
-                    <Series>
-                        <asp:Series Name="Series1" YValuesPerPoint="2" ChartArea="ChartArea1" Legend="Legend1"></asp:Series>
-                        <asp:Series Name="Series2" YValuesPerPoint="2" ChartArea="ChartArea1" Legend="Legend1"></asp:Series>
-                        <asp:Series Name="Series3" YValuesPerPoint="2" ChartArea="ChartArea1" Legend="Legend1"></asp:Series>
-                        <asp:Series Name="Series4" YValuesPerPoint="2" ChartArea="ChartArea1" Legend="Legend1"></asp:Series>
-                    </Series>
-                    <BorderSkin SkinStyle="Emboss" BackImageAlignment="Center" PageColor="Transparent"></BorderSkin>
-                    <ChartAreas>
-                        <asp:ChartArea Name="ChartArea1"></asp:ChartArea>
-                    </ChartAreas>
-                    <Legends>
-                        <asp:Legend BorderDashStyle="Dash" Docking="Bottom" Font="微软雅黑, 8.25pt" IsTextAutoFit="False" Name="Legend1">
-                        </asp:Legend>
-                    </Legends>
-                </asp:Chart>
-
+                </div>
             </div>
         </div>
     </div>
     <br />
+
+    <script type="text/javascript">
+        $(function () {
+            InitChartFileCount();
+        });
+
+        function InitChartFileCount() {
+            //var year = $('#input_Year2').val();   //选中的值;   // 选中文本
+            $.ajax({
+                url: "RsFileRpt.aspx",
+                type: "Post",
+                async: false,
+                dataType: "text",  //请求到服务器返回的数据类型
+                data: { "action": "GetFileCount" },
+
+                success: function (data) {
+                    var obj = $.parseJSON(data); //这个数据Json化
+                    //调用Echart生成方法
+                    GetEchartFileCount(obj);
+                }
+            })
+        }
+        function GetEchartFileCount(obj) {
+
+            //建立数组
+            var uploadtime = new Array(); //标题数组
+            var TotalCount = new Array(); //值数组
+            var ResignCount = new Array(); //值数组
+
+            //填入标题及各值的数据
+            for (var i = 0; i < obj.length; i++) {
+                uploadtime.push(obj[i]["uploadtime"]);
+                TotalCount.push(obj[i]["TotalCount"]);
+                ResignCount.push(obj[i]["ResignCount"]);
+            };
+
+            //用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
+            var div_chart1 = document.getElementById('div_chart_FileCount');
+            var resizechart1Container = function () {
+                div_chart1.style.width = window.innerWidth - 200 + 'px';
+                div_chart1.style.height = window.innerHeight - 350 + 'px';
+            };
+            resizechart1Container();
+
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(div_chart1);
+            var option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['一次性签名成功文件数', '重签文件数']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    name: '个',
+                    boundaryGap: [0, 0.01]
+                },
+                yAxis: {
+                    type: 'category',
+                    //data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                    data: uploadtime
+                },
+                series: [
+                    {
+                        name: '一次性签名成功文件数',
+                        type: 'bar',
+                        stack: '总量',
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'insideRight'
+                            }
+                        },
+                        //data: [320, 302, 301, 334, 390, 330, 320]
+                        data: TotalCount
+                    },
+                    {
+                        name: '重签文件数',
+                        type: 'bar',
+                        stack: '总量',
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'insideRight'
+                            }
+                        },
+                        //data: [120, 132, 101, 134, 90, 230, 210]
+                        data: ResignCount
+                    }
+                ]
+            };
+            //使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+            //用于使chart自适应高度和宽度
+            window.onresize = function () {
+                //重置容器高宽
+                resizechart1Container();
+                myChart.resize();
+            };
+        }
+    </script>
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="ContentPlaceHolder2" runat="server">
 </asp:Content>
+

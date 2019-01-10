@@ -37,7 +37,7 @@
     <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.min.js") %>'></script>--%>
 
     <script src='<%=ResolveUrl("~/js/loading.js") %>'></script>
-    <script src='<%=ResolveUrl("~/js/chart.js") %>'></script>
+    <script src='<%=ResolveUrl("~/js/echarts.js") %>'></script>
 
     <%--引用js函数--%>
     <script>
@@ -150,14 +150,8 @@
                <%-- <li class="layui-nav-item"><a href="FileReSign.aspx">异常处理</a></li>
                 <li class="layui-nav-item"><a href="MidDBInfo.aspx">中间库信息</a></li>--%>
 
+                <li class="layui-nav-item"><a href="RsFileRpt.aspx">报表统计</a></li>
 
-                <li class="layui-nav-item">
-                    <a href="javascript:;">报表统计</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="RsFileRpt.aspx">签名文件统计</a></dd>
-                        <%--<dd><a href="ReasonRpt.aspx">重签原因统计</a></dd>--%>
-                    </dl>
-                </li>
             </ul>
 
             <ul class="layui-nav layui-layout-right">
