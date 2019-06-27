@@ -95,7 +95,7 @@ namespace IsignatureMaintain.views
             {
                 //获取$符号后面字符串
                 ConditionStr += " and [Remark] like '%" + TextBox_Remark.Text.Trim() + "%'";
-            }
+            } 
             //下拉框值为文件类型选择
             if (!DropDownList_FileExt.Text.Trim().Equals("请选择"))
             {
