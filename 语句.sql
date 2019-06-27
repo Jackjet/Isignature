@@ -286,3 +286,17 @@ update p set p.DOC_UNIQUE = u.DOC_UNIQUE,p.DOC_NAME = u.DOC_NAME,p.DOC_STATUS = 
 from [SIGN_DOCNUMET_INSIG_INFO_Bak] p, view_signinfo u
 where p.[DOC_REAL_NAME] = u.[DOC_REAL_NAME] 
 
+
+--一次性签名成功与重签文件个数
+  select a.TotalCount ,b.ResignCount,a.uploadtime  from (SELECT COUNT(*)as TotalCount ,convert(varchar(7),uploadtime) as uploadtime
+  FROM [DWH].[dbo].[CPMS_sync_drawinginfo] where resign IS  NULL
+  group by convert(varchar(7),uploadtime)) a left join 
+  (SELECT COUNT(*)as ResignCount ,convert(varchar(7),uploadtime) as uploadtime
+  FROM [DWH].[dbo].[CPMS_sync_drawinginfo]
+  where Resign IS NOT NULL
+  group by convert(varchar(7),uploadtime)
+  ) b
+  on a.uploadtime=b.uploadtime
+  where a.uploadtime>'2018-07'
+  order by uploadtime desc
+

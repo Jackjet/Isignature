@@ -9,14 +9,8 @@
     <title>电子签章运维管理系统</title>
 
     <link href="<%=ResolveClientUrl("~/css/loading.css") %>" rel="stylesheet" />
-    <%--引用bootstrap框架CSS--%>
-<%--    <link href="<%=ResolveClientUrl("~/css/bootstrap.min.css") %>" rel="stylesheet" />
-    <link href="<%=ResolveClientUrl("~/css/bootstrap-select.min.css") %>" rel="stylesheet" />--%>
     <link href="<%=ResolveClientUrl("~/css/Gridview.css") %>" rel="stylesheet" />
     <link href="<%=ResolveClientUrl("~/css/font-awesome.min.css") %>" rel="stylesheet" />
-<%--    <link href="<%=ResolveClientUrl("~/css/bootstrap-datetimepicker.css") %>" rel="stylesheet" />
-    <link href="<%=ResolveClientUrl("~/css/bootstrap-datetimepicker.min.css") %>" rel="stylesheet" />--%>
-    <%-- <link href="css/lovely.css" rel="stylesheet" />--%>
 
 
     <%--LayUI--%>
@@ -30,11 +24,8 @@
 
     <%--引用bootstrap框架js--%>
     <script src='<%=ResolveUrl("~/js/jquery-3.1.1.min.js") %>'></script>
-<%--    <script src='<%=ResolveUrl("~/js/bootstrap.min.js") %>'></script>
-    <script src='<%=ResolveUrl("~/js/bootstrap-select.min.js") %>'></script>--%>
     <script src='<%=ResolveUrl("~/js/transition.min.js") %>'></script>
-<%--    <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.js") %>'></script>
-    <script src='<%=ResolveUrl("~/js/bootstrap-datetimepicker.min.js") %>'></script>--%>
+
 
     <script src='<%=ResolveUrl("~/js/loading.js") %>'></script>
     <script src='<%=ResolveUrl("~/js/echarts.js") %>'></script>
