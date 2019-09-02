@@ -90,7 +90,7 @@ namespace IsignatureMaintain.views
                 if (DropDownList_IsWriten.Text.Trim().Equals("未写入"))
                     ConditionStr += " and picnumber is null";
                 if (DropDownList_IsWriten.Text.Trim().Equals("日期不一致"))
-                    ConditionStr += " and UploadDate<>uploadtime and LastUpdateDate>='2018.09.01'";
+                    ConditionStr += " and UploadDate>uploadtime and LastUpdateDate>='2019.08.24'";
             }
             //DataRow[] dr = DtUnion.Select("1=1" + ConditionStr, "Id desc");     // 从DtUnion 中查询符合条件的记录； 
 
@@ -165,10 +165,10 @@ namespace IsignatureMaintain.views
                 }
                 else
                 {
-                    string pltdate = Convert.ToDateTime(drv.Row["UploadDate"].ToString().Trim()).ToShortDateString();
+                    DateTime pltdate = Convert.ToDateTime(drv.Row["UploadDate"].ToString().Trim());
                     //string end = drv.Row["uploadtime"].ToString().Trim();
-                    string enddate = Convert.ToDateTime(drv.Row["uploadtime"].ToString().Trim()).ToShortDateString();
-                    if (pltdate != enddate)
+                    DateTime enddate = Convert.ToDateTime(drv.Row["uploadtime"].ToString().Trim());
+                    if (pltdate > enddate)
                     {
                         e.Row.BackColor = System.Drawing.Color.Yellow;
                     }
