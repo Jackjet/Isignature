@@ -233,6 +233,7 @@
     <Content Include="TestPage\fff.aspx" />
     <Content Include="TestPage\form.aspx" />
     <Content Include="TestPage\FTPTest.aspx" />
+    <Content Include="views\DISReseltInfo.aspx" />
     <Content Include="views\HanaFileCKPLTRcd.aspx" />
     <Content Include="views\HannaRecord.aspx" />
     <Content Include="views\KeyMaintain.aspx" />
@@ -256,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\FtpWeb.cs" />
+    <Compile Include="Models\SqlHelper.cs" />
     <Compile Include="TestPage\fff.aspx.cs">
       <DependentUpon>fff.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -276,6 +278,13 @@
     </Compile>
     <Compile Include="TestPage\FTPTest.aspx.designer.cs">
       <DependentUpon>FTPTest.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="views\DISReseltInfo.aspx.cs">
+      <DependentUpon>DISReseltInfo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="views\DISReseltInfo.aspx.designer.cs">
+      <DependentUpon>DISReseltInfo.aspx</DependentUpon>
     </Compile>
     <Compile Include="views\HanaFileCKPLTRcd.aspx.cs">
       <DependentUpon>HanaFileCKPLTRcd.aspx</DependentUpon>

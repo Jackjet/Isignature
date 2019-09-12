@@ -117,6 +117,7 @@
             <%--<img src="../img/SegLog.jpg" />--%>
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"><a href="DISReseltInfo.aspx">前置校验工具上传记录</a></li>
                 <li class="layui-nav-item"><a href="HannaRecord.aspx">汉纳系统处理记录</a></li>
                 <li class="layui-nav-item"><a href="PDFSignedResult.aspx">中间库信息查询</a></li>
 
